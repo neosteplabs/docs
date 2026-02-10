@@ -96,8 +96,35 @@
   <h2>Member Inquiry</h2>
   <p>
     Qualified researchers and institutions may submit an inquiry below.
-    Access to the catalog is subject to review and approval.
+    Access is subject to review and approval.
   </p>
+
+  <form
+    method="POST"
+    action="https://formspree.io/f/REPLACE_ME"
+  >
+    <label>
+      Full Name
+      <input type="text" name="name" required>
+    </label>
+
+    <label>
+      Email Address
+      <input type="email" name="email" required>
+    </label>
+
+    <label>
+      Institution / Company
+      <input type="text" name="organization" required>
+    </label>
+
+    <label>
+      Research Use Description
+      <textarea name="message" rows="4" required></textarea>
+    </label>
+
+    <button type="submit">Submit Inquiry</button>
+  </form>
 </section>
 
 <!-- FOOTER -->
