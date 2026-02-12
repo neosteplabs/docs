@@ -8,10 +8,12 @@ const firebaseConfig = {
   appId: "1:312972875460:web:b87c32224d0b26b2a09b91"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+// Auth state listener
 auth.onAuthStateChanged(async (user) => {
   updateAuthLink(user);
 
@@ -22,6 +24,7 @@ auth.onAuthStateChanged(async (user) => {
   router();
 });
 
+// Ensure user exists
 async function ensureUserRecord(user) {
   const userRef = db.collection("users").doc(user.uid);
   const doc = await userRef.get();
@@ -50,6 +53,7 @@ async function router() {
   }
 
   if (page === "catalog" && user && approved) {
+
     const productsSnapshot = await db
       .collection("products")
       .where("visible", "==", true)
@@ -90,8 +94,7 @@ async function router() {
     `,
     login: `
       <section class="secure-gate">
-        <div class="secure-header">📧 Email Login Required</div>
-        <h1>Enter Your Email</h1>
+        <h1>Email Login Required</h1>
         <form onsubmit="sendMagicLink(event)">
           <input type="email" id="email" required placeholder="Enter your email">
           <button type="submit">Send Login Link</button>
@@ -101,7 +104,7 @@ async function router() {
     `,
     restricted: `
       <section class="secure-gate">
-        <div class="secure-header">🔒 Access Restricted</div>
+        <h1>Access Restricted</h1>
         <a href="#login" class="btn">Login to Continue</a>
       </section>
     `
@@ -116,6 +119,7 @@ async function router() {
 
 function sendMagicLink(event) {
   event.preventDefault();
+
   const email = document.getElementById("email").value;
 
   const actionCodeSettings = {
@@ -150,6 +154,7 @@ function logout() {
 
 function updateAuthLink(user) {
   const authLink = document.getElementById("auth-link");
+
   if (!authLink) return;
 
   if (user) {
