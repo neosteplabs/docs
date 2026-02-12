@@ -8,6 +8,7 @@ const firebaseConfig = {
   appId: "1:312972875460:web:b87c32224d0b26b2a09b91"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -34,7 +35,15 @@ window.addEventListener("hashchange", router);
 
 async function router() {
   const content = document.getElementById("content");
-  const page = window.location.hash.replace("#", "") || "home";
+  const rawHash = window.location.hash;
+
+  // Force home on base URL
+  if (!rawHash || rawHash === "") {
+    window.location.hash = "#home";
+    return;
+  }
+
+  const page = window.location.hash.replace("#", "");
   const user = auth.currentUser;
 
   let approved = false;
@@ -43,8 +52,8 @@ async function router() {
     approved = doc.exists && doc.data().approved === true;
   }
 
+  // If catalog and user is authenticated + approved
   if (page === "catalog" && user && approved) {
-
     const productsSnapshot = await db
       .collection("products")
       .where("visible", "==", true)
@@ -52,7 +61,6 @@ async function router() {
       .get();
 
     let productHTML = "";
-
     productsSnapshot.forEach(doc => {
       const product = doc.data();
       productHTML += `
@@ -78,6 +86,7 @@ async function router() {
     return;
   }
 
+  // Normal page renders
   const pages = {
     home: `
       <section class="hero">
@@ -92,6 +101,7 @@ async function router() {
         <form onsubmit="sendMagicLink(event)">
           <input type="email" id="email" required placeholder="Enter your email">
           <button type="submit">Send Login Link</button>
+          <p id="login-message" class="error-message"></p>
         </form>
       </section>
     `,
@@ -100,8 +110,62 @@ async function router() {
         <h1>Access Restricted</h1>
         <a href="#login" class="btn">Login to Continue</a>
       </section>
+    `,
+    contact: `
+      <section class="contact">
+        <h1>Contact</h1>
+        <p>Email: <a href="mailto:neosteplabs@gmail.com">neosteplabs@gmail.com</a></p>
+      </section>
     `
   };
 
-  content.innerHTML = pages[page] || pages.home;
+  if (pages[page]) {
+    content.innerHTML = pages[page];
+  } else {
+    content.innerHTML = pages.home;
+  }
+}
+
+function sendMagicLink(event) {
+  event.preventDefault();
+  const email = document.getElementById("email").value;
+
+  const actionCodeSettings = {
+    url: "https://neosteplabs.github.io/docs",
+    handleCodeInApp: true
+  };
+
+  auth.sendSignInLinkToEmail(email, actionCodeSettings)
+    .then(() => {
+      window.localStorage.setItem('emailForSignIn', email);
+      document.getElementById("login-message").innerText =
+        "Login link sent. Check your email.";
+    });
+}
+
+if (auth.isSignInWithEmailLink(window.location.href)) {
+  let email = window.localStorage.getItem('emailForSignIn');
+  if (!email) email = window.prompt('Confirm your email');
+
+  auth.signInWithEmailLink(email, window.location.href)
+    .then(() => {
+      window.localStorage.removeItem('emailForSignIn');
+      window.location.hash = "#catalog";
+    });
+}
+
+function logout() {
+  auth.signOut().then(() => {
+    window.location.hash = "#home";
+  });
+}
+
+function updateAuthLink(user) {
+  const authLink = document.getElementById("auth-link");
+  if (!authLink) return;
+  if (user) {
+    authLink.innerHTML = `<a href="#" onclick="logout()">Logout</a>`;
+  } else {
+    authLink.innerHTML = `<a href="#login">Login</a>`;
+  }
 }
