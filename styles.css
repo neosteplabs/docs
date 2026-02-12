@@ -28,13 +28,13 @@ gap:15px;
 }
 
 .header-logo{
-height:90px;
+height:110px;
 width:auto;
 }
 
 @media (max-width: 768px){
   .header-logo{
-    height:65px;
+    height:75px;
   }
 }
 
@@ -52,7 +52,7 @@ font-size:1.05rem;
 
 #app{
 position:fixed;
-top:170px;
+top:190px;
 bottom:60px;
 left:0;
 right:0;
