@@ -36,12 +36,20 @@ body {
 }
 
 .logo {
-  font-size: 1.55rem;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.6rem;
   font-weight: 700;
   text-decoration: none;
-  color: #1a1a1a;
-  letter-spacing: -0.5px;
+  color: #ffffff;
 }
+
+.logo-icon {
+  width: 34px;
+  height: 34px;
+}
+
 
 .nav-links {
   list-style: none;
