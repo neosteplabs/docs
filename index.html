@@ -12,12 +12,12 @@
 
 <body>
 
-<header class="navbar" id="navbar">
+<header class="navbar">
   <nav class="nav-container">
     <a href="#home" class="logo">
       <svg class="logo-icon" viewBox="0 0 100 100">
         <path d="M20 80V20C20 15 25 15 28 20L50 60L72 20C75 15 80 15 80 20V80"
-          stroke="white"
+          stroke="#2b6cb0"
           stroke-width="10"
           fill="none"
           stroke-linecap="round"
@@ -47,18 +47,6 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <script src="script.js"></script>
-
-<script>
-  // Navbar scroll effect
-  window.addEventListener("scroll", function() {
-    const navbar = document.getElementById("navbar");
-    if (window.scrollY > 40) {
-      navbar.classList.add("scrolled");
-    } else {
-      navbar.classList.remove("scrolled");
-    }
-  });
-</script>
 
 </body>
 </html>
