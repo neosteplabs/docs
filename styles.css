@@ -53,6 +53,20 @@ html, body {
   font-size: 1rem;
 }
 
+@media (max-width: 768px) {
+  .navbar {
+    height: 80px;
+  }
+
+  .header-logo {
+    height: 45px;
+  }
+
+  #app {
+    top: 80px;
+  }
+}
+
 /* ================= NAV LINKS ================= */
 
 .nav-links {
