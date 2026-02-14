@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account | NeoStep</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="nav-container">
+
+    <a href="index.html">
+      <img src="neostep-logo-header.jpg" class="header-logo" alt="NeoStep Logo">
+    </a>
+
+    <div class="nav-right">
+
+      <ul class="nav-links">
+        <li><a href="catalog.html">Catalog</a></li>
+      </ul>
+
+      <div class="profile-wrapper" id="profileWrapper">
+        <div class="profile-trigger" id="profileTrigger">
+          <span class="user-dot"></span>
+          <span id="userEmail" class="user-email"></span>
+          <span class="caret">▾</span>
+        </div>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="dropdown-item" onclick="window.location.href='account.html'">Account</div>
+          <div class="dropdown-item" id="logoutBtn">Logout</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</header>
+
+<main id="content">
+
+  <h1 style="margin-bottom:40px;">Account Overview</h1>
+
+  <div class="account-card">
+    <h3>Email</h3>
+    <p id="accountEmail"></p>
+
+    <h3>Account Status</h3>
+    <p>Verified Research Access</p>
+  </div>
+
+</main>
+
+<footer class="footer">
+  © 2026 NeoStep. Research use only. Not for human or veterinary use.
+</footer>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
