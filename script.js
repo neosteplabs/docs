@@ -3,10 +3,10 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
   onAuthStateChanged,
   setPersistence,
-  browserLocalPersistence,
-  signOut
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -25,44 +25,77 @@ setPersistence(auth, browserLocalPersistence);
 const registerBtn = document.getElementById("registerBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-const userEmail = document.getElementById("userEmail");
-const accountEmail = document.getElementById("accountEmail");
+const message = document.getElementById("auth-message");
 const authSection = document.getElementById("authSection");
+const userEmailDisplay = document.getElementById("userEmail");
+const profileMenu = document.getElementById("profileMenu");
 
 if (registerBtn) {
-  registerBtn.addEventListener("click", () => {
-    createUserWithEmailAndPassword(auth,
-      document.getElementById("email").value,
-      document.getElementById("password").value
-    );
-  });
+  registerBtn.onclick = () => {
+    createUserWithEmailAndPassword(auth, email.value, password.value)
+      .then(() => message.textContent = "Registration Successful")
+      .catch(e => message.textContent = e.message);
+  };
 }
 
 if (loginBtn) {
-  loginBtn.addEventListener("click", () => {
-    signInWithEmailAndPassword(auth,
-      document.getElementById("email").value,
-      document.getElementById("password").value
-    ).then(() => window.location.href = "catalog.html");
-  });
+  loginBtn.onclick = () => {
+    signInWithEmailAndPassword(auth, email.value, password.value)
+      .then(() => window.location.href = "catalog.html")
+      .catch(e => message.textContent = e.message);
+  };
 }
 
 if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
+  logoutBtn.onclick = () => {
     signOut(auth).then(() => window.location.href = "index.html");
+  };
+}
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    if (authSection) authSection.style.display = "none";
+    if (profileMenu) profileMenu.style.display = "flex";
+    if (userEmailDisplay) userEmailDisplay.textContent = user.email;
+
+    if (window.location.pathname.includes("index")) {
+      window.location.href = "catalog.html";
+    }
+  } else {
+    if (window.location.pathname.includes("catalog")) {
+      window.location.href = "index.html";
+    }
+  }
+});
+
+/* Search */
+const searchInput = document.getElementById("searchInput");
+const mgFilter = document.getElementById("mgFilter");
+const cards = document.querySelectorAll(".product-card");
+
+function filterProducts() {
+  if (!cards) return;
+  const search = searchInput?.value.toLowerCase() || "";
+  const mg = mgFilter?.value || "";
+
+  cards.forEach(card => {
+    const name = card.dataset.name.toLowerCase();
+    const cardMg = card.dataset.mg;
+
+    const matchesSearch = name.includes(search);
+    const matchesMg = mg === "" || cardMg === mg;
+
+    card.style.display = (matchesSearch && matchesMg) ? "block" : "none";
   });
 }
 
-onAuthStateChanged(auth, (user) => {
-  const path = window.location.pathname;
+if (searchInput) searchInput.addEventListener("input", filterProducts);
+if (mgFilter) mgFilter.addEventListener("change", filterProducts);
 
-  if (!user && path.includes("catalog")) {
-    window.location.href = "index.html";
-  }
-
-  if (user) {
-    if (userEmail) userEmail.textContent = user.email;
-    if (accountEmail) accountEmail.textContent = user.email;
-    if (authSection) authSection.style.display = "none";
-  }
-});
+/* Dropdown */
+const trigger = document.getElementById("profileTrigger");
+if (trigger) {
+  trigger.onclick = () => {
+    trigger.parentElement.classList.toggle("open");
+  };
+}
