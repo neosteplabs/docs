@@ -15,7 +15,7 @@ import {
 /* ================= FIREBASE CONFIG ================= */
 
 const firebaseConfig = {
-  apiKey: "YOUR_NEW_API_KEY",
+  apiKey: "AIzaSyDzrAXCzu2VzxzV02jLW_SpiLJ0mLK8N1g",
   authDomain: "neostep-portal-b9ea3.firebaseapp.com",
   projectId: "neostep-portal-b9ea3",
   storageBucket: "neostep-portal-b9ea3.appspot.com",
