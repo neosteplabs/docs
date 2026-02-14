@@ -1,74 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Research Compound Catalog</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
+<div class="product-grid">
 
-<header class="navbar">
-  <div class="nav-container">
-    <a href="index.html">
-      <img src="neostep-logo-header.jpg" class="header-logo" alt="NeoStep Logo">
-    </a>
+  <div class="product-card"
+       data-name="ns-rt 10mg"
+       data-compound="ns-rt"
+       data-mg="10">
 
-    <nav class="nav-links">
-      <a href="catalog.html" class="nav-link active">Catalog</a>
-
-      <div class="profile-menu">
-        <div class="profile-trigger" id="profileTrigger">
-          <span id="userEmail"></span>
-          <span class="caret">▾</span>
-        </div>
-        <div class="dropdown">
-          <a href="account.html">Account</a>
-          <button id="logoutBtn">Logout</button>
-        </div>
-      </div>
-    </nav>
-  </div>
-</header>
-
-<main id="content">
-  <h1 class="page-title">Research Compound Catalog</h1>
-
-  <div class="catalog-controls">
-    <input type="text" id="searchInput" placeholder="Search compound..." />
-    <select id="mgFilter">
-      <option value="">All mg</option>
-      <option value="10">10 mg</option>
-      <option value="20">20 mg</option>
-      <option value="30">30 mg</option>
-    </select>
-  </div>
-
-  <div class="product-grid" id="productGrid">
-    <div class="product-card" data-name="NS-RT" data-mg="10">
-      <img src="ns-rt-10.png" alt="">
-      <h3>NS-RT 10mg</h3>
-      <p>Research compound</p>
+    <div class="product-image">
+      <img src="images/ns-rt-10.png" alt="NS-RT 10mg">
     </div>
 
-    <div class="product-card" data-name="NS-RT" data-mg="20">
-      <img src="ns-rt-20.png" alt="">
-      <h3>NS-RT 20mg</h3>
-      <p>Research compound</p>
-    </div>
-
-    <div class="product-card" data-name="NS-RT" data-mg="30">
-      <img src="ns-rt-30.png" alt="">
-      <h3>NS-RT 30mg</h3>
-      <p>Research compound</p>
-    </div>
+    <h3>NS-RT 10mg</h3>
+    <p>Research compound</p>
   </div>
-</main>
 
-<footer class="footer">
-  © 2026 NeoStep. Research use only.
-</footer>
 
-<script type="module" src="script.js"></script>
-</body>
-</html>
+  <div class="product-card"
+       data-name="ns-rt 20mg"
+       data-compound="ns-rt"
+       data-mg="20">
+
+    <div class="product-image">
+      <img src="images/ns-rt-20.png" alt="NS-RT 20mg">
+    </div>
+
+    <h3>NS-RT 20mg</h3>
+    <p>Research compound</p>
+  </div>
+
+
+  <div class="product-card"
+       data-name="ns-rt 30mg"
+       data-compound="ns-rt"
+       data-mg="30">
+
+    <div class="product-image">
+      <img src="images/ns-rt-30.png" alt="NS-RT 30mg">
+    </div>
+
+    <h3>NS-RT 30mg</h3>
+    <p>Research compound</p>
+  </div>
+
+</div>
