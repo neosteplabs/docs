@@ -1,42 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8" />
+  <title>NeoStep Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NeoStep Secure Research Portal</title>
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="favicon.ico">
 </head>
 
 <body>
 
 <header class="navbar">
-  <nav class="nav-container">
-    <a href="#home">
-      <img src="neostep-logo-header.jpg" class="header-logo" alt="NeoStep Logo">
-    </a>
-
+  <div class="nav-container">
+    <img src="neostep-logo-header.png" class="header-logo" />
     <ul class="nav-links">
       <li><a href="#catalog">Catalog</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-  </nav>
+  </div>
 </header>
 
-<main id="app">
-  <div id="content"></div>
-</main>
+<div id="content">
+
+  <section id="home" class="hero">
+    <h1>NeoStep Secure Research Portal</h1>
+    <p>Verified laboratory access only.</p>
+    <button class="btn" onclick="showAuth()">Access Catalog</button>
+  </section>
+
+  <section id="auth-section" style="display:none; text-align:center;">
+    <h2>Login / Register</h2>
+
+    <input type="email" id="email" placeholder="Email" /><br><br>
+    <input type="password" id="password" placeholder="Password" /><br><br>
+
+    <button class="btn" onclick="register()">Register</button>
+    <button class="btn" onclick="login()">Login</button>
+
+    <p id="auth-message" style="margin-top:20px;"></p>
+  </section>
+
+  <section id="catalog-section" style="display:none;">
+    <h2 style="text-align:center;">Research Compound Catalog</h2>
+    <div id="catalog-container" class="product-grid"></div>
+  </section>
+
+</div>
 
 <footer class="footer">
   © 2026 NeoStep. Research use only. Not for human or veterinary use.
 </footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 
 </body>
 </html>
