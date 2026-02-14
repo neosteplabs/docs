@@ -1,86 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Research Compound Catalog</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <header class="navbar">
   <div class="nav-container">
-    <a href="index.html" class="logo-link">
-      <img src="neostep-logo-header.jpg" class="header-logo" alt="NeoStep Logo">
+    <a href="index.html">
+      <img src="neostep-logo-header.jpg" class="header-logo">
     </a>
 
     <ul class="nav-links">
       <li><a href="catalog.html" class="active">Catalog</a></li>
-
-      <li class="profile" id="profileMenu">
-        <div class="avatar" id="avatarCircle"></div>
-        <span class="profile-email" id="userEmail"></span>
-        <span class="dropdown-arrow">▾</span>
-
-        <div class="profile-dropdown">
-          <a href="account.html">Account</a>
-          <a href="#" id="logoutBtn">Logout</a>
-        </div>
-      </li>
+      <li><a href="cart.html">Cart (<span id="cartCount">0</span>)</a></li>
     </ul>
   </div>
 </header>
 
 <main id="content">
 
-  <h1>Research Compound Catalog</h1>
+<h1>Research Compound Catalog</h1>
 
-  <div class="catalog-controls">
-    <input type="text" id="searchInput" placeholder="Search compound...">
+<div class="compound-grid">
 
-    <select id="mgFilter">
-      <option value="">All mg</option>
-      <option value="10">10 mg</option>
-      <option value="20">20 mg</option>
-      <option value="30">30 mg</option>
-    </select>
+  <!-- NS-RT -->
+  <div class="compound-card" data-compound="NS-RT">
+    <img src="images/ns-rt-10.png" class="compound-image">
+    <h2>NS-RT</h2>
+
+    <div class="strength-row" data-strength="10mg" data-price="100">
+      <span>10 mg</span>
+      <span>$100</span>
+      <div class="stepper">
+        <button class="minus">–</button>
+        <span class="qty">0</span>
+        <button class="plus">+</button>
+      </div>
+    </div>
+
+    <div class="strength-row" data-strength="20mg" data-price="180">
+      <span>20 mg</span>
+      <span>$180</span>
+      <div class="stepper">
+        <button class="minus">–</button>
+        <span class="qty">0</span>
+        <button class="plus">+</button>
+      </div>
+    </div>
+
+    <div class="strength-row" data-strength="30mg" data-price="250">
+      <span>30 mg</span>
+      <span>$250</span>
+      <div class="stepper">
+        <button class="minus">–</button>
+        <span class="qty">0</span>
+        <button class="plus">+</button>
+      </div>
+    </div>
+
+    <button class="btn addSelected">Add Selected to Cart</button>
   </div>
 
-  <div class="product-grid">
+  <!-- NS-TZ -->
+  <div class="compound-card" data-compound="NS-TZ">
+    <img src="images/ns-tz-10.png" class="compound-image">
+    <h2>NS-TZ</h2>
 
-    <div class="product-card" data-name="ns-rt 10mg" data-mg="10">
-      <div class="product-image">
-        <img src="images/ns-rt-10.png" alt="NS-RT 10mg">
+    <div class="strength-row" data-strength="10mg" data-price="110">
+      <span>10 mg</span>
+      <span>$110</span>
+      <div class="stepper">
+        <button class="minus">–</button>
+        <span class="qty">0</span>
+        <button class="plus">+</button>
       </div>
-      <h3>NS-RT 10mg</h3>
-      <p>Research compound</p>
     </div>
 
-    <div class="product-card" data-name="ns-rt 20mg" data-mg="20">
-      <div class="product-image">
-        <img src="images/ns-rt-20.png" alt="NS-RT 20mg">
+    <div class="strength-row" data-strength="20mg" data-price="200">
+      <span>20 mg</span>
+      <span>$200</span>
+      <div class="stepper">
+        <button class="minus">–</button>
+        <span class="qty">0</span>
+        <button class="plus">+</button>
       </div>
-      <h3>NS-RT 20mg</h3>
-      <p>Research compound</p>
     </div>
 
-    <div class="product-card" data-name="ns-rt 30mg" data-mg="30">
-      <div class="product-image">
-        <img src="images/ns-rt-30.png" alt="NS-RT 30mg">
+    <div class="strength-row" data-strength="30mg" data-price="280">
+      <span>30 mg</span>
+      <span>$280</span>
+      <div class="stepper">
+        <button class="minus">–</button>
+        <span class="qty">0</span>
+        <button class="plus">+</button>
       </div>
-      <h3>NS-RT 30mg</h3>
-      <p>Research compound</p>
     </div>
 
+    <button class="btn addSelected">Add Selected to Cart</button>
   </div>
+
+</div>
 
 </main>
 
 <footer class="footer">
-  © 2026 NeoStep. Research use only. Not for human or veterinary use.
+  © 2026 NeoStep. Research use only.
 </footer>
 
-<script type="module" src="script.js"></script>
-<script src="catalog-filter.js"></script>
+<script type="module" src="catalog-cart.js"></script>
 </body>
 </html>
