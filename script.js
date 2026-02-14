@@ -1,127 +1,104 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  sendEmailVerification,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  getDocs 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* ================= FIREBASE CONFIG ================= */
+
 const firebaseConfig = {
-  apiKey: "AIzaSyDzrAXCzu2VzxzV02jLW_SpiLJ0mLK8N1g",
+  apiKey: "YOUR_NEW_API_KEY",
   authDomain: "neostep-portal-b9ea3.firebaseapp.com",
   projectId: "neostep-portal-b9ea3",
-  storageBucket: "neostep-portal-b9ea3.firebasestorage.app",
+  storageBucket: "neostep-portal-b9ea3.appspot.com",
   messagingSenderId: "312972875460",
   appId: "1:312972875460:web:b87c32224d0b26b2a09b91"
 };
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-auth.onAuthStateChanged(() => router());
-window.addEventListener("hashchange", router);
+/* ================= UI FUNCTIONS ================= */
 
-function router() {
-  const content = document.getElementById("content");
-  const page = window.location.hash.replace("#", "") || "home";
-  const user = auth.currentUser;
+window.showAuth = function() {
+  document.getElementById("auth-section").style.display = "block";
+};
 
-  if (page === "contact") {
-    content.innerHTML = `
-      <div class="hero">
-        <h2>Contact NeoStep</h2>
-        <p>Email: <strong>neosteplabs@gmail.com</strong></p>
-        <p style="margin-top:20px;opacity:0.8;">
-          All products are intended strictly for research use only.
-          Not for human or veterinary use.
-        </p>
-      </div>
-    `;
-    return;
+/* ================= REGISTER ================= */
+
+window.register = async function() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("auth-message");
+
+  try {
+    const userCred = await createUserWithEmailAndPassword(auth, email, password);
+    await sendEmailVerification(userCred.user);
+    msg.innerText = "Verification email sent. Please verify before logging in.";
+  } catch (err) {
+    msg.innerText = err.message;
   }
+};
 
-  if (page === "catalog") {
+/* ================= LOGIN ================= */
 
-    if (!user) {
-      content.innerHTML = `
-        <div class="login-panel">
-          <h2>Secure Access Required</h2>
-          <p>Enter your email to receive a login link.</p>
-          <input type="email" id="email" placeholder="Email address">
-          <button onclick="sendLink()">Send Login Link</button>
-          <p id="message"></p>
-        </div>
-      `;
+window.login = async function() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("auth-message");
+
+  try {
+    const userCred = await signInWithEmailAndPassword(auth, email, password);
+
+    if (!userCred.user.emailVerified) {
+      msg.innerText = "Please verify your email before accessing the catalog.";
       return;
     }
 
-    db.collection("products")
-      .where("visible","==",true)
-      .get()
-      .then(snapshot => {
-
-        let html = "";
-
-        snapshot.forEach(doc => {
-          const p = doc.data();
-
-          html += `
-            <div class="product-card">
-              <div class="product-image">
-                <img src="${p.image}" alt="${p.code}">
-              </div>
-              <h3>${p.code}</h3>
-              <p>${p.description}</p>
-            </div>
-          `;
-        });
-
-        content.innerHTML = `
-          <section>
-            <h1 style="text-align:center;margin-bottom:40px;">
-              Research Compound Catalog
-            </h1>
-            <div class="product-grid">
-              ${html}
-            </div>
-          </section>
-        `;
-      });
-
-    return;
+    loadCatalog();
+  } catch (err) {
+    msg.innerText = err.message;
   }
+};
 
-  content.innerHTML = `
-    <div class="hero">
-      <h1>NeoStep Secure Research Portal</h1>
-      <p>Verified laboratory access only.</p>
-      <a href="#catalog" class="btn">Access Catalog</a>
-    </div>
-  `;
-}
+/* ================= AUTH STATE ================= */
 
-function sendLink() {
-  const email = document.getElementById("email").value;
-
-  const actionCodeSettings = {
-    url: window.location.origin + window.location.pathname,
-    handleCodeInApp: true
-  };
-
-  auth.sendSignInLinkToEmail(email, actionCodeSettings)
-    .then(() => {
-      window.localStorage.setItem('emailForSignIn', email);
-      document.getElementById("message").innerText =
-        "Login link sent. Check your email.";
-    });
-}
-
-if (auth.isSignInWithEmailLink(window.location.href)) {
-
-  let email = window.localStorage.getItem('emailForSignIn');
-
-  if (!email) {
-    window.location.hash = "#catalog";
-  } else {
-    auth.signInWithEmailLink(email, window.location.href)
-      .then(() => {
-        window.localStorage.removeItem('emailForSignIn');
-        window.location.hash = "#catalog";
-      });
+onAuthStateChanged(auth, (user) => {
+  if (user && user.emailVerified) {
+    loadCatalog();
   }
-}
+});
 
-router();
+/* ================= LOAD CATALOG ================= */
+
+async function loadCatalog() {
+  document.getElementById("auth-section").style.display = "none";
+  document.getElementById("catalog-section").style.display = "block";
+
+  const container = document.getElementById("catalog-container");
+  container.innerHTML = "";
+
+  const querySnapshot = await getDocs(collection(db, "products"));
+  querySnapshot.forEach((doc) => {
+    const product = doc.data();
+
+    container.innerHTML += `
+      <div class="product-card">
+        <div class="product-image">
+          <img src="${product.image}" />
+        </div>
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+      </div>
+    `;
+  });
+}
