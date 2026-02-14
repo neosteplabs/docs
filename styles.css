@@ -8,9 +8,10 @@ html, body {
   font-family: 'Inter', sans-serif;
   background: #f3f7fb;
   color: #1e293b;
+  overflow-x: hidden;
 }
 
-/* HEADER */
+/* ================= HEADER ================= */
 
 .navbar {
   position: fixed;
@@ -32,18 +33,20 @@ html, body {
   justify-content: space-between;
   padding: 15px 30px;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .header-logo {
-  height: 80px;
+  height: 70px;
   width: auto;
-  max-width: 60%;
+  max-width: 100%;
 }
 
 .nav-links {
   list-style: none;
   display: flex;
   gap: 25px;
+  flex-wrap: wrap;
 }
 
 .nav-links a {
@@ -52,13 +55,15 @@ html, body {
   font-weight: 500;
 }
 
-/* MAIN */
+/* ================= MAIN ================= */
 
 #content {
   max-width: 1200px;
   margin: 200px auto 120px auto;
   padding: 40px 20px;
 }
+
+/* ================= HERO ================= */
 
 .hero {
   text-align: center;
@@ -81,44 +86,15 @@ html, body {
   color: white;
   border-radius: 10px;
   text-decoration: none;
+  display: inline-block;
 }
 
-/* AUTH */
-
-.auth-section {
-  max-width: 400px;
-  margin: auto;
-  text-align: center;
-}
-
-.auth-section input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-}
-
-.auth-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.auth-buttons button {
-  flex: 1;
-  padding: 12px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 8px;
-}
-
-/* CATALOG */
+/* ================= CATALOG ================= */
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 20px;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .product-card {
@@ -131,11 +107,23 @@ html, body {
 
 .product-image img {
   width: 100%;
-  max-width: 140px;
+  max-width: 120px;
+  height: auto;
   margin-bottom: 15px;
+  object-fit: contain;
 }
 
-/* FOOTER */
+.product-card h3 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.product-card p {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* ================= FOOTER ================= */
 
 .footer {
   position: fixed;
@@ -150,18 +138,16 @@ html, body {
   color: #64748b;
 }
 
-/* RESPONSIVE */
+/* ================= RESPONSIVE ================= */
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .product-grid {
     grid-template-columns: repeat(3, 1fr);
   }
+}
 
-  .header-logo {
-    height: 60px;
-  }
-
-  .nav-container {
-    padding: 10px 15px;
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
