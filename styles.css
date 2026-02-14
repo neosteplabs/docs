@@ -61,6 +61,19 @@ html, body {
   color: #2563eb;
 }
 
+.navbar a {
+  display: inline-flex;
+  align-items: center;
+}
+
+.header-logo {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.header-logo:hover {
+  transform: scale(1.03);
+}
 /* ================= MAIN ================= */
 
 #content {
