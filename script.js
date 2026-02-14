@@ -20,82 +20,67 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+
 setPersistence(auth, browserLocalPersistence);
 
 const registerBtn = document.getElementById("registerBtn");
 const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
 const message = document.getElementById("auth-message");
-const authSection = document.getElementById("authSection");
-const userEmailDisplay = document.getElementById("userEmail");
-const profileMenu = document.getElementById("profileMenu");
 
 if (registerBtn) {
   registerBtn.onclick = () => {
     createUserWithEmailAndPassword(auth, email.value, password.value)
-      .then(() => message.textContent = "Registration Successful")
-      .catch(e => message.textContent = e.message);
+      .then(()=> message.textContent="Registration Successful")
+      .catch(e=> message.textContent=e.message);
   };
 }
 
 if (loginBtn) {
   loginBtn.onclick = () => {
     signInWithEmailAndPassword(auth, email.value, password.value)
-      .then(() => window.location.href = "catalog.html")
-      .catch(e => message.textContent = e.message);
+      .then(()=> window.location="catalog.html")
+      .catch(e=> message.textContent=e.message);
   };
 }
 
-if (logoutBtn) {
-  logoutBtn.onclick = () => {
-    signOut(auth).then(() => window.location.href = "index.html");
-  };
-}
+const profileMenu = document.getElementById("profileMenu");
+const avatarCircle = document.getElementById("avatarCircle");
+const userEmail = document.getElementById("userEmail");
+const logoutBtn = document.getElementById("logoutBtn");
 
 onAuthStateChanged(auth, user => {
-  if (user) {
-    if (authSection) authSection.style.display = "none";
-    if (profileMenu) profileMenu.style.display = "flex";
-    if (userEmailDisplay) userEmailDisplay.textContent = user.email;
 
-    if (window.location.pathname.includes("index")) {
-      window.location.href = "catalog.html";
-    }
+  if (user) {
+
+    if (avatarCircle) avatarCircle.textContent = user.email[0].toUpperCase();
+    if (userEmail) userEmail.textContent = user.email;
+
+    const accountEmail = document.getElementById("accountEmail");
+    if (accountEmail) accountEmail.textContent = user.email;
+
   } else {
-    if (window.location.pathname.includes("catalog")) {
-      window.location.href = "index.html";
+    if (location.pathname.includes("catalog") || location.pathname.includes("account")) {
+      window.location = "index.html";
     }
   }
 });
 
-/* Search */
-const searchInput = document.getElementById("searchInput");
-const mgFilter = document.getElementById("mgFilter");
-const cards = document.querySelectorAll(".product-card");
-
-function filterProducts() {
-  if (!cards) return;
-  const search = searchInput?.value.toLowerCase() || "";
-  const mg = mgFilter?.value || "";
-
-  cards.forEach(card => {
-    const name = card.dataset.name.toLowerCase();
-    const cardMg = card.dataset.mg;
-
-    const matchesSearch = name.includes(search);
-    const matchesMg = mg === "" || cardMg === mg;
-
-    card.style.display = (matchesSearch && matchesMg) ? "block" : "none";
-  });
+if (logoutBtn) {
+  logoutBtn.onclick = e => {
+    e.preventDefault();
+    signOut(auth).then(()=> window.location="index.html");
+  };
 }
 
-if (searchInput) searchInput.addEventListener("input", filterProducts);
-if (mgFilter) mgFilter.addEventListener("change", filterProducts);
-
-/* Dropdown */
-const trigger = document.getElementById("profileTrigger");
-if (trigger) {
-  trigger.onclick = () => {
-    trigger.parentElement.classList.toggle("open");
+if (profileMenu) {
+  profileMenu.onclick = e => {
+    e.stopPropagation();
+    profileMenu.classList.toggle("open");
   };
+
+  document.addEventListener("click", e => {
+    if (!profileMenu.contains(e.target)) {
+      profileMenu.classList.remove("open");
+    }
+  });
 }
