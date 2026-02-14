@@ -1,45 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NeoStep Secure Portal</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
 <header class="navbar">
   <div class="nav-container">
-
     <a href="index.html">
       <img src="neostep-logo-header.jpg" class="header-logo" alt="NeoStep Logo">
     </a>
 
-    <div class="nav-right">
-      <ul class="nav-links">
-        <li><a href="catalog.html">Catalog</a></li>
-      </ul>
+    <nav class="nav-links">
+      <a href="catalog.html" class="nav-link">Catalog</a>
 
-      <div class="profile-wrapper" id="profileWrapper">
+      <div class="profile-menu" id="profileMenu" style="display:none;">
         <div class="profile-trigger" id="profileTrigger">
-          <span class="user-dot"></span>
-          <span id="userEmail" class="user-email"></span>
+          <span id="userEmail"></span>
           <span class="caret">▾</span>
         </div>
-
-        <div class="dropdown-menu" id="dropdownMenu">
-          <div class="dropdown-item" onclick="window.location.href='account.html'">Account</div>
-          <div class="dropdown-item" id="logoutBtn">Logout</div>
+        <div class="dropdown">
+          <a href="account.html">Account</a>
+          <button id="logoutBtn">Logout</button>
         </div>
       </div>
-    </div>
-
+    </nav>
   </div>
 </header>
 
 <main id="content">
-
   <section class="hero">
     <h1>NeoStep Secure Research Portal</h1>
     <p>Verified laboratory access only.</p>
@@ -48,15 +41,14 @@
 
   <section class="auth-section" id="authSection">
     <h2>Login / Register</h2>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
     <div class="auth-buttons">
       <button id="registerBtn">Register</button>
       <button id="loginBtn">Login</button>
     </div>
     <p id="auth-message"></p>
   </section>
-
 </main>
 
 <footer class="footer">
