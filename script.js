@@ -1,104 +1,29 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
-  sendEmailVerification,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { 
-  getFirestore, 
-  collection, 
-  getDocs 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-/* ================= FIREBASE CONFIG ================= */
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDzrAXCzu2VzxzV02jLW_SpiLJ0mLK8N1g",
-  authDomain: "neostep-portal-b9ea3.firebaseapp.com",
-  projectId: "neostep-portal-b9ea3",
-  storageBucket: "neostep-portal-b9ea3.appspot.com",
-  messagingSenderId: "312972875460",
-  appId: "1:312972875460:web:b87c32224d0b26b2a09b91"
+  apiKey: "PASTE_YOUR_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
 
-/* ================= UI FUNCTIONS ================= */
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const message = document.getElementById("auth-message");
 
-window.showAuth = function() {
-  document.getElementById("auth-section").style.display = "block";
-};
-
-/* ================= REGISTER ================= */
-
-window.register = async function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const msg = document.getElementById("auth-message");
-
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email, password);
-    await sendEmailVerification(userCred.user);
-    msg.innerText = "Verification email sent. Please verify before logging in.";
-  } catch (err) {
-    msg.innerText = err.message;
-  }
-};
-
-/* ================= LOGIN ================= */
-
-window.login = async function() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const msg = document.getElementById("auth-message");
-
-  try {
-    const userCred = await signInWithEmailAndPassword(auth, email, password);
-
-    if (!userCred.user.emailVerified) {
-      msg.innerText = "Please verify your email before accessing the catalog.";
-      return;
-    }
-
-    loadCatalog();
-  } catch (err) {
-    msg.innerText = err.message;
-  }
-};
-
-/* ================= AUTH STATE ================= */
-
-onAuthStateChanged(auth, (user) => {
-  if (user && user.emailVerified) {
-    loadCatalog();
-  }
+document.getElementById("registerBtn")?.addEventListener("click", () => {
+  createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+    .then(() => message.textContent = "Registration successful.")
+    .catch(error => message.textContent = error.message);
 });
 
-/* ================= LOAD CATALOG ================= */
-
-async function loadCatalog() {
-  document.getElementById("auth-section").style.display = "none";
-  document.getElementById("catalog-section").style.display = "block";
-
-  const container = document.getElementById("catalog-container");
-  container.innerHTML = "";
-
-  const querySnapshot = await getDocs(collection(db, "products"));
-  querySnapshot.forEach((doc) => {
-    const product = doc.data();
-
-    container.innerHTML += `
-      <div class="product-card">
-        <div class="product-image">
-          <img src="${product.image}" />
-        </div>
-        <h3>${product.name}</h3>
-        <p>${product.description}</p>
-      </div>
-    `;
-  });
-}
+document.getElementById("loginBtn")?.addEventListener("click", () => {
+  signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+    .then(() => window.location.href = "catalog.html")
+    .catch(error => message.textContent = error.message);
+});
