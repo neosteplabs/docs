@@ -5,11 +5,14 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   setPersistence,
-  browserLocalPersistence
+  browserLocalPersistence,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+/* ================= FIREBASE CONFIG ================= */
+
 const firebaseConfig = {
-  apiKey: "YAIzaSyDl54NMHQfCYLd2m10X4J5wjEBsQn9mkcg",
+  apiKey: "AIzaSyDl54NMHQfCYLd2m10X4J5wjEBsQn9mkcg",
   authDomain: "neostep-portal-b9ea3.firebaseapp.com",
   projectId: "neostep-portal-b9ea3",
   storageBucket: "neostep-portal-b9ea3.appspot.com",
@@ -20,13 +23,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// 🔥 Enable persistent login
+/* ================= ENABLE PERSISTENT LOGIN ================= */
+
 setPersistence(auth, browserLocalPersistence);
 
-// DOM Elements
+/* ================= DOM ELEMENTS ================= */
+
 const registerBtn = document.getElementById("registerBtn");
 const loginBtn = document.getElementById("loginBtn");
 const message = document.getElementById("auth-message");
+
+/* ================= REGISTER ================= */
 
 if (registerBtn) {
   registerBtn.addEventListener("click", () => {
@@ -38,10 +45,12 @@ if (registerBtn) {
         message.textContent = "Registration Successful";
       })
       .catch(error => {
-        message.textContent = "Firebase: " + error.message;
+        message.textContent = error.message;
       });
   });
 }
+
+/* ================= LOGIN ================= */
 
 if (loginBtn) {
   loginBtn.addEventListener("click", () => {
@@ -50,18 +59,28 @@ if (loginBtn) {
 
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
-        message.textContent = "Login Successful";
         window.location.href = "catalog.html";
       })
       .catch(error => {
-        message.textContent = "Firebase: " + error.message;
+        message.textContent = error.message;
       });
   });
 }
 
-// 🔥 Auto-redirect if already logged in
-onAuthStateChanged(auth, user => {
-  if (user && window.location.pathname.includes("index")) {
+/* ================= AUTH STATE PROTECTION ================= */
+
+onAuthStateChanged(auth, (user) => {
+
+  const currentPage = window.location.pathname;
+
+  // 🔒 Protect catalog page
+  if (!user && currentPage.includes("catalog")) {
+    window.location.href = "index.html";
+  }
+
+  // 🔁 Redirect logged-in users away from homepage
+  if (user && (currentPage.endsWith("/") || currentPage.includes("index"))) {
     window.location.href = "catalog.html";
   }
+
 });
