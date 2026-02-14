@@ -1,56 +1,47 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>NeoStep Portal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="styles.css" />
+  <title>NeoStep Secure Portal</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
 <header class="navbar">
   <div class="nav-container">
     <img src="neostep-logo-header.jpg" class="header-logo" />
     <ul class="nav-links">
-      <li><a href="#catalog">Catalog</a></li>
-      <li><a href="#contact">Contact</a></li>
+      <li><a href="catalog.html">Catalog</a></li>
+      <li><a href="contact.html">Contact</a></li>
     </ul>
   </div>
 </header>
 
-<div id="content">
-
-  <section id="home" class="hero">
+<main id="content">
+  <section class="hero">
     <h1>NeoStep Secure Research Portal</h1>
     <p>Verified laboratory access only.</p>
-    <button class="btn" onclick="showAuth()">Access Catalog</button>
+    <a href="catalog.html" class="btn">Access Catalog</a>
   </section>
 
-  <section id="auth-section" style="display:none; text-align:center;">
+  <section class="auth-section">
     <h2>Login / Register</h2>
-
-    <input type="email" id="email" placeholder="Email" /><br><br>
-    <input type="password" id="password" placeholder="Password" /><br><br>
-
-    <button class="btn" onclick="register()">Register</button>
-    <button class="btn" onclick="login()">Login</button>
-
-    <p id="auth-message" style="margin-top:20px;"></p>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <div class="auth-buttons">
+      <button id="registerBtn">Register</button>
+      <button id="loginBtn">Login</button>
+    </div>
+    <p id="auth-message"></p>
   </section>
-
-  <section id="catalog-section" style="display:none;">
-    <h2 style="text-align:center;">Research Compound Catalog</h2>
-    <div id="catalog-container" class="product-grid"></div>
-  </section>
-
-</div>
+</main>
 
 <footer class="footer">
   © 2026 NeoStep. Research use only. Not for human or veterinary use.
 </footer>
 
 <script type="module" src="script.js"></script>
-
 </body>
 </html>
