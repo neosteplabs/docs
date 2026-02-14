@@ -38,7 +38,7 @@ html, body {
 }
 
 .header-logo {
-  height: 120px;
+  height: 60px;
   width: auto;
   display: block;
 }
@@ -64,7 +64,7 @@ html, body {
 
 #content {
   max-width: 1200px;
-  margin: 240px auto 120px auto; /* space for fixed header/footer */
+  margin: 150px auto 120px auto; /* space for fixed header/footer */
   padding: 40px 20px;
 }
 
