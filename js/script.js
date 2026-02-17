@@ -1,7 +1,6 @@
-// Firebase Modular Imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { auth, db } from "./firebase-config.js";
+
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
@@ -11,28 +10,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
-  getFirestore,
   doc,
   setDoc,
   getDoc,
   updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// 🔐 Firebase Config
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "neostep-portal-b9ea3.firebaseapp.com",
-  projectId: "neostep-portal-b9ea3",
-  storageBucket: "neostep-portal-b9ea3.appspot.com",
-  messagingSenderId: "312972875460",
-  appId: "1:312972875460:web:b87c32224d0b26b2a09b91"
-};
-
-// Initialize
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 // Enable persistent login
 setPersistence(auth, browserLocalPersistence);
@@ -73,8 +56,8 @@ const profileMenu = document.getElementById("profileMenu");
 // ===============================
 if (registerBtn) {
   registerBtn.addEventListener("click", async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
     try {
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
@@ -83,9 +66,8 @@ if (registerBtn) {
       const referralFromURL = localStorage.getItem("referralCode");
       const newReferralCode = generateReferralCode();
 
-      // Create user document
       await setDoc(doc(db, "users", uid), {
-        email: email,
+        email,
         referralCode: newReferralCode,
         referredBy: referralFromURL || null,
         referralQualified: false,
@@ -93,7 +75,6 @@ if (registerBtn) {
         createdAt: serverTimestamp()
       });
 
-      // Create referral document
       await setDoc(doc(db, "referrals", newReferralCode), {
         ownerUid: uid,
         ownerEmail: email,
@@ -117,8 +98,8 @@ if (registerBtn) {
 // ===============================
 if (loginBtn) {
   loginBtn.addEventListener("click", async () => {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
@@ -166,12 +147,10 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Hide login section if logged in
   if (authSection) {
     authSection.style.display = "none";
   }
 
-  // Show email in header
   if (userEmailDisplay) {
     userEmailDisplay.textContent = user.email;
   }
@@ -180,7 +159,6 @@ onAuthStateChanged(auth, async (user) => {
     avatarCircle.textContent = user.email.charAt(0).toUpperCase();
   }
 
-  // Enforce profile completion
   const userSnap = await getDoc(doc(db, "users", user.uid));
   if (userSnap.exists()) {
     const userData = userSnap.data();
