@@ -154,35 +154,32 @@ if (profileMenu) {
 ================================= */
 onAuthStateChanged(auth, async (user) => {
 
-  // 🚫 NOT logged in
+  const path = window.location.pathname;
+
+  // 🚫 Not logged in
   if (!user) {
-    if (!window.location.pathname.includes("index")) {
+    if (!path.includes("index")) {
       window.location.href = "index.html";
     }
     return;
   }
 
-  // ✅ Logged in AND on index → go to catalog
-  if (
-    window.location.pathname.includes("index.html") ||
-    window.location.pathname === "/" ||
-    window.location.pathname.endsWith("/")
-  ) {
+  // ✅ Logged in AND currently on index page
+  if (path.endsWith("index.html") || path === "/" || path === "") {
     window.location.href = "catalog.html";
     return;
   }
 
-  // Hide login section
+  // Hide login section if present
   if (authSection) {
     authSection.style.display = "none";
   }
 
-  // Show user email
+  // Show email
   if (userEmailDisplay) {
     userEmailDisplay.textContent = user.email;
   }
 
-  // Avatar initial
   if (avatarCircle) {
     avatarCircle.textContent = user.email.charAt(0).toUpperCase();
   }
@@ -193,10 +190,8 @@ onAuthStateChanged(auth, async (user) => {
   if (userSnap.exists()) {
     const userData = userSnap.data();
 
-    if (
-      !userData.profileComplete &&
-      !window.location.pathname.includes("complete-profile")
-    ) {
+    if (!userData.profileComplete &&
+        !path.includes("complete-profile")) {
       window.location.href = "complete-profile.html";
     }
   }
