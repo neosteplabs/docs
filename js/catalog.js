@@ -37,12 +37,12 @@ let currentUser = null;
 const products = [
   {
     compound: "NS-RT",
-    image: "assests/images/ns-rt-10.png",
+    image: "assets/images/ns-rt-10.png",
     prices: { 10: 100, 20: 180, 30: 250 }
   },
   {
     compound: "NS-TZ",
-    image: "assests/images/ns-tz-10.png",
+    image: "assets/images/ns-tz-10.png",
     prices: { 10: 110, 20: 200, 30: 280 }
   }
 ];
