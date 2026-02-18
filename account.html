@@ -2,11 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Account | NeoStep</title>
-  <link rel="stylesheet" href="css/styles.css?v=12" />
+  <link rel="stylesheet" href="css/styles.css?v=7" />
 </head>
-
 <body>
 
 <header class="navbar">
@@ -33,44 +32,28 @@
 
 <main>
 
-  <h1>My Account</h1>
+<h1>My Account</h1>
 
-  <!-- TAB BUTTONS -->
-  <div class="account-tabs">
-    <button id="profileTabBtn" class="tab-btn active">Profile</button>
-    <button id="ordersTabBtn" class="tab-btn">Order History</button>
-  </div>
+<div class="account-tabs">
+  <button id="profileTabBtn" class="tab-btn active">Profile</button>
+  <button id="ordersTabBtn" class="tab-btn">Order History</button>
+</div>
 
-  <!-- PROFILE SECTION -->
-  <section id="profileSection">
+<div id="profileSection">
+  <h2>Profile Information</h2>
 
-    <h2>Profile Information</h2>
+  <p><strong>Email:</strong> <span id="emailDisplay">-</span></p>
+  <p><strong>Phone:</strong> <span id="phoneDisplay">-</span></p>
+  <p><strong>Address:</strong> <span id="addressDisplay">-</span></p>
+  <p><strong>Referral Code:</strong> <span id="referralDisplay">-</span></p>
 
-    <p><strong>Email:</strong> <span id="emailDisplay"></span></p>
-    <p><strong>Phone:</strong> <span id="phoneDisplay"></span></p>
+  <a href="complete-profile.html" class="btn">Edit Profile</a>
+</div>
 
-    <p>
-      <strong>Address:</strong><br>
-      <span id="addressDisplay"></span>
-    </p>
-
-    <p>
-      <strong>Your Referral Code:</strong>
-      <span id="referralDisplay"></span>
-    </p>
-
-    <a href="complete-profile.html" class="btn">Edit Profile</a>
-
-  </section>
-
-  <!-- ORDER SECTION -->
-  <section id="ordersSection" style="display:none;">
-
-    <h2>Order History</h2>
-
-    <div id="ordersContainer"></div>
-
-  </section>
+<div id="ordersSection" style="display:none;">
+  <h2>Order History</h2>
+  <div id="ordersContainer"></div>
+</div>
 
 </main>
 
@@ -79,6 +62,5 @@
 </footer>
 
 <script type="module" src="js/account.js"></script>
-
 </body>
 </html>
