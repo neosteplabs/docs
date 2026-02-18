@@ -100,7 +100,7 @@ function renderProducts() {
 }
 
 /* =========================
-   CART
+   CART (Floating Only)
 ========================= */
 function listenToCart(uid) {
 
@@ -135,10 +135,7 @@ function listenToCart(uid) {
         <div>$${item.quantity * item.price}</div>
       `;
 
-      const decrease = row.querySelector(".decrease");
-      const increase = row.querySelector(".increase");
-
-      decrease.addEventListener("click", async () => {
+      row.querySelector(".decrease").addEventListener("click", async () => {
         if (item.quantity > 1) {
           await updateDoc(docSnap.ref, {
             quantity: item.quantity - 1
@@ -148,7 +145,7 @@ function listenToCart(uid) {
         }
       });
 
-      increase.addEventListener("click", async () => {
+      row.querySelector(".increase").addEventListener("click", async () => {
         await updateDoc(docSnap.ref, {
           quantity: item.quantity + 1
         });
@@ -160,41 +157,26 @@ function listenToCart(uid) {
     document.getElementById("cartTotal").textContent =
       `Total: $${totalPrice}`;
 
-    const badge = document.getElementById("cartBadge");
     const mobileCount = document.getElementById("mobileCartCount");
-
-    if (totalQty > 0) {
-      badge.style.display = "inline-block";
-      badge.textContent = totalQty;
-      mobileCount.textContent = totalQty;
-    } else {
-      badge.style.display = "none";
-      mobileCount.textContent = "0";
-    }
+    mobileCount.textContent = totalQty;
 
   });
 }
 
 /* =========================
-   DROPDOWN TOGGLE
+   DROPDOWN TOGGLE (Floating)
 ========================= */
-const cartIcon = document.getElementById("cartIcon");
-const cartDropdown = document.getElementById("cartDropdown");
-const mobileBubble = document.getElementById("mobileCartBubble");
+const bubble = document.getElementById("mobileCartBubble");
+const dropdown = document.getElementById("cartDropdown");
 
-cartIcon?.addEventListener("click", e => {
+bubble?.addEventListener("click", e => {
   e.stopPropagation();
-  cartDropdown.classList.toggle("open");
-});
-
-mobileBubble?.addEventListener("click", e => {
-  e.stopPropagation();
-  cartDropdown.classList.toggle("open");
+  dropdown.classList.toggle("open");
 });
 
 document.addEventListener("click", e => {
-  if (!cartDropdown.contains(e.target) && !cartIcon.contains(e.target)) {
-    cartDropdown.classList.remove("open");
+  if (!bubble.contains(e.target)) {
+    dropdown.classList.remove("open");
   }
 });
 
