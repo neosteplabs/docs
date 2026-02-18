@@ -13,15 +13,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const ordersContainer = document.getElementById("ordersContainer");
-const logoutBtn = document.getElementById("logoutBtn");
-
-/* =========================
-   Logout
-========================= */
-logoutBtn?.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
-});
 
 /* =========================
    Auth Guard
