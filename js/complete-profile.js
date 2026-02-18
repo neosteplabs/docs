@@ -1,14 +1,8 @@
 import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-import {
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+const saveBtn = document.getElementById("saveProfile");
 
 onAuthStateChanged(auth, (user) => {
 
@@ -17,41 +11,17 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  const saveBtn = document.getElementById("saveProfileBtn");
+  saveBtn?.addEventListener("click", async () => {
 
-  saveBtn.addEventListener("click", async () => {
+    const address = document.getElementById("address").value;
+    const phone = document.getElementById("phone").value;
 
-    const name = document.getElementById("name").value.trim();
-    const company = document.getElementById("company").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const address = document.getElementById("address").value.trim();
+    await updateDoc(doc(db, "users", user.uid), {
+      address,
+      phone,
+      profileComplete: true
+    });
 
-    if (!name || !phone || !address) {
-      alert("Please fill all required fields.");
-      return;
-    }
-
-    try {
-
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          name,
-          company,
-          phone,
-          address,
-          profileComplete: true
-        },
-        { merge: true } // <-- THIS IS THE FIX
-      );
-
-      window.location.href = "catalog.html";
-
-    } catch (error) {
-      console.error(error);
-      alert(error.message);
-    }
-
+    window.location.href = "catalog.html";
   });
-
 });
