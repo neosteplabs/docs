@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Research Compound Catalog</title>
-  <link rel="stylesheet" href="css/styles.css?v=8" />
+  <link rel="stylesheet" href="css/styles.css?v=9" />
 </head>
 
 <body>
@@ -19,30 +19,24 @@
     <ul class="nav-links">
       <li><a href="catalog.html" class="active">Catalog</a></li>
       <li><a href="account.html">Account</a></li>
-
-      <li id="cartIcon" class="cart-wrapper">
-        🛒
-        <span id="cartBadge">0</span>
-
-        <!-- DROPDOWN -->
-        <div id="cartDropdown" class="cart-dropdown">
-          <div id="cartItems"></div>
-          <div class="cart-footer">
-            <div id="cartTotal">Total: $0</div>
-            <button id="goCheckout" class="btn">Checkout</button>
-          </div>
-        </div>
-      </li>
-
       <li id="logoutBtn">Logout</li>
     </ul>
 
   </div>
 </header>
 
-<!-- Floating Mobile Cart -->
+<!-- Floating Cart Bubble (ONLY CART NOW) -->
 <div id="mobileCartBubble" class="mobile-cart-bubble">
   🛒 <span id="mobileCartCount">0</span>
+
+  <div id="cartDropdown" class="cart-dropdown">
+    <div id="cartItems"></div>
+
+    <div class="cart-footer">
+      <div id="cartTotal">Total: $0</div>
+      <button id="goCheckout" class="btn">Checkout</button>
+    </div>
+  </div>
 </div>
 
 <main>
