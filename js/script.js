@@ -1,157 +1,85 @@
 import { auth } from "./firebase-config.js";
-import { signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { auth } from "./firebase-config.js";
 
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged,
-  setPersistence,
-  browserLocalPersistence
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-/* ===============================
-   Enable Persistent Login
-================================= */
-setPersistence(auth, browserLocalPersistence);
+/* =========================
+   AUTH ELEMENTS
+========================= */
 
-/* ===============================
-   DOM Elements
-================================= */
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const registerBtn = document.getElementById("registerBtn");
 const loginBtn = document.getElementById("loginBtn");
 const logoutBtn = document.getElementById("logoutBtn");
-const authSection = document.getElementById("authSection");
+const authMessage = document.getElementById("auth-message");
 
-const cartIcon = document.getElementById("cartIcon");
-const cartBadge = document.getElementById("cartBadge");
+/* =========================
+   REGISTER
+========================= */
 
-const navLinks = document.querySelectorAll(".nav-links li");
+registerBtn?.addEventListener("click", async () => {
+  try {
+    await createUserWithEmailAndPassword(
+      auth,
+      emailInput.value,
+      passwordInput.value
+    );
 
-/* ===============================
-   Helper: Hide Private Nav Items
-================================= */
-function hidePrivateNav() {
-  navLinks.forEach(li => {
-    if (li.id !== "cartIcon") {
-      li.style.display = "none";
-    }
-  });
+    authMessage.textContent = "Registration successful!";
+    window.location.href = "catalog.html";
 
-  if (cartIcon) cartIcon.style.display = "none";
-}
+  } catch (error) {
+    authMessage.textContent = error.message;
+  }
+});
 
-/* ===============================
-   Helper: Show Private Nav Items
-================================= */
-function showPrivateNav() {
-  navLinks.forEach(li => {
-    li.style.display = "flex";
-  });
-}
+/* =========================
+   LOGIN
+========================= */
 
-/* ===============================
-   Registration
-================================= */
-if (registerBtn) {
-  registerBtn.addEventListener("click", async () => {
+loginBtn?.addEventListener("click", async () => {
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      emailInput.value,
+      passwordInput.value
+    );
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+    window.location.href = "catalog.html";
 
-    if (!email || !password) {
-      alert("Please enter email and password.");
-      return;
-    }
+  } catch (error) {
+    authMessage.textContent = error.message;
+  }
+});
 
-    try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      window.location.href = "catalog.html";
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-}
+/* =========================
+   LOGOUT (GLOBAL)
+========================= */
 
-/* ===============================
-   Login
-================================= */
-if (loginBtn) {
-  loginBtn.addEventListener("click", async () => {
+logoutBtn?.addEventListener("click", async () => {
+  await signOut(auth);
+  window.location.href = "index.html";
+});
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+/* =========================
+   AUTH GUARD
+========================= */
 
-    if (!email || !password) {
-      alert("Please enter email and password.");
-      return;
-    }
-
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      window.location.href = "catalog.html";
-    } catch (error) {
-      alert(error.message);
-    }
-  });
-}
-
-/* ===============================
-   Logout
-================================= */
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async () => {
-    await signOut(auth);
-    window.location.href = "index.html";
-  });
-}
-
-/* ===============================
-   Auth State Listener
-================================= */
 onAuthStateChanged(auth, (user) => {
 
   const path = window.location.pathname;
 
-  // 🔒 If NOT logged in
-  if (!user) {
+  const isProtectedPage =
+    path.includes("catalog.html") ||
+    path.includes("orders.html");
 
-    hidePrivateNav();
-
-    if (
-      path.includes("catalog") ||
-      path.includes("orders")
-    ) {
-      window.location.href = "index.html";
-    }
-
-    if (authSection) {
-      authSection.style.display = "block";
-    }
-
-    return;
-  }
-
-  // 🔓 If logged in
-  showPrivateNav();
-
-  if (authSection) {
-    authSection.style.display = "none";
-  }
-
-/* =========================
-   Global Logout Handler
-========================= */
-document.addEventListener("DOMContentLoaded", () => {
-
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      await signOut(auth);
-      window.location.href = "index.html";
-    });
+  if (!user && isProtectedPage) {
+    window.location.href = "index.html";
   }
 
 });
