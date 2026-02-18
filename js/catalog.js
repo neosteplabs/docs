@@ -177,15 +177,16 @@ function listenToCart(uid) {
 ========================= */
 const cartIcon = document.getElementById("cartIcon");
 const drawer = document.getElementById("cartDrawer");
+const overlay = document.getElementById("cartOverlay");
 
 cartIcon?.addEventListener("click", () => {
   drawer.classList.toggle("open");
+  overlay.classList.toggle("open");
 });
 
-document.addEventListener("click", e => {
-  if (!drawer.contains(e.target) && !cartIcon.contains(e.target)) {
-    drawer.classList.remove("open");
-  }
+overlay?.addEventListener("click", () => {
+  drawer.classList.remove("open");
+  overlay.classList.remove("open");
 });
 
 /* =========================
