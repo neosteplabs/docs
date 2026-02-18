@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
+  signOut,
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -28,7 +29,7 @@ const loginBtn = document.getElementById("loginBtn");
 const message = document.getElementById("auth-message");
 
 /* =========================
-   Generate Unique Referral Code
+   Generate Unique Referral Code (NSXXXX)
 ========================= */
 
 async function generateReferralCode() {
@@ -56,15 +57,17 @@ async function generateReferralCode() {
 ========================= */
 
 registerBtn?.addEventListener("click", async () => {
+
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
 
   if (!email || !password) {
-    message.textContent = "Please enter email and password.";
+    if (message) message.textContent = "Please enter email and password.";
     return;
   }
 
   try {
+
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -73,10 +76,8 @@ registerBtn?.addEventListener("click", async () => {
 
     const user = userCredential.user;
 
-    // Generate referral code
     const referralCode = await generateReferralCode();
 
-    // Create Firestore user document
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       referralCode,
@@ -84,15 +85,14 @@ registerBtn?.addEventListener("click", async () => {
       createdAt: serverTimestamp()
     });
 
-    // Send email verification
     await sendEmailVerification(user);
 
     alert("Verification email sent. Please verify before logging in.");
 
-    await auth.signOut();
+    await signOut(auth);
 
   } catch (error) {
-    message.textContent = error.message;
+    if (message) message.textContent = error.message;
   }
 });
 
@@ -101,10 +101,17 @@ registerBtn?.addEventListener("click", async () => {
 ========================= */
 
 loginBtn?.addEventListener("click", async () => {
+
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
 
+  if (!email || !password) {
+    if (message) message.textContent = "Please enter email and password.";
+    return;
+  }
+
   try {
+
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
@@ -115,23 +122,33 @@ loginBtn?.addEventListener("click", async () => {
 
     if (!user.emailVerified) {
       alert("Please verify your email before accessing the portal.");
-      await auth.signOut();
+      await signOut(auth);
       return;
     }
 
-    window.location.href = "catalog.html";
+    window.location.replace("catalog.html");
 
   } catch (error) {
-    message.textContent = error.message;
+    if (message) message.textContent = error.message;
   }
 });
 
 /* =========================
-   Auto Redirect if Logged In
+   Auth State Listener (SAFE)
 ========================= */
 
 onAuthStateChanged(auth, (user) => {
-  if (user && user.emailVerified) {
-    window.location.href = "catalog.html";
+
+  // Only redirect IF we are on index.html
+  const path = window.location.pathname;
+
+  const isIndex =
+    path.endsWith("index.html") ||
+    path === "/" ||
+    path.endsWith("/docs/");
+
+  if (isIndex && user && user.emailVerified) {
+    window.location.replace("catalog.html");
   }
+
 });
