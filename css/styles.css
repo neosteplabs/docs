@@ -8,6 +8,7 @@
 }
 
 html {
+  font-size: 16px;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -24,7 +25,7 @@ body {
 ========================= */
 main {
   max-width: 1100px;
-  margin: 120px auto 100px auto;
+  margin: 130px auto 100px auto;
   padding: 20px;
 }
 
@@ -33,20 +34,16 @@ main {
 ========================= */
 h1 {
   font-size: 32px;
-  font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 h2 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 16px;
+  font-size: 22px;
+  margin-bottom: 20px;
 }
 
 h3 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  margin-bottom: 15px;
 }
 
 /* =========================
@@ -54,7 +51,7 @@ h3 {
 ========================= */
 button,
 .btn {
-  padding: 12px 20px;
+  padding: 12px 22px;
   background: #2563eb;
   color: white;
   border: none;
@@ -64,7 +61,6 @@ button,
   transition: 0.2s ease;
   text-decoration: none;
   display: inline-block;
-  text-align: center;
 }
 
 button:hover,
@@ -73,14 +69,14 @@ button:hover,
 }
 
 /* =========================
-   FORM ELEMENTS
+   INPUTS
 ========================= */
 input,
-textarea,
-select {
+select,
+textarea {
   width: 100%;
   padding: 12px;
-  margin: 8px 0 16px 0;
+  margin-bottom: 16px;
   border-radius: 12px;
   border: 1px solid #e2e8f0;
   font-size: 14px;
@@ -89,7 +85,7 @@ select {
 }
 
 /* =========================
-   NAVBAR (LOCKED STANDARD)
+   NAVBAR (LOCKED)
 ========================= */
 .navbar {
   position: fixed;
@@ -97,14 +93,13 @@ select {
   left: 0;
   right: 0;
   margin: 0 auto;
-
   width: calc(100% - 24px);
   max-width: 1200px;
 
   background: rgba(255,255,255,0.98);
   backdrop-filter: blur(14px);
   border-radius: 26px;
-  padding: 16px 24px;
+  padding: 18px 28px;
 
   box-shadow: 0 14px 40px rgba(0,0,0,0.06);
   z-index: 1000;
@@ -121,33 +116,38 @@ select {
   width: auto;
 }
 
-/* NAV LINKS */
 .nav-links {
   list-style: none;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 28px;
 }
 
 .nav-links li {
-  display: flex;
-  align-items: center;
   cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  color: #1e293b;
+  transition: 0.2s ease;
 }
 
 .nav-links a {
   text-decoration: none;
-  color: #1e293b;
-  font-weight: 500;
-  font-size: 15px;
-  transition: 0.2s ease;
+  color: inherit;
 }
 
+.nav-links li:hover,
 .nav-links a:hover {
   color: #2563eb;
 }
 
-/* CART BADGE */
+.nav-links a.active {
+  font-weight: 600;
+}
+
+/* =========================
+   CART BADGE
+========================= */
 #cartIcon {
   position: relative;
 }
@@ -171,22 +171,20 @@ select {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 30px;
-  max-width: 1000px;
-  margin: 0 auto;
 }
 
 .product-card {
   background: white;
-  padding: 24px;
-  border-radius: 22px;
+  padding: 28px;
+  border-radius: 20px;
   box-shadow: 0 12px 30px rgba(0,0,0,0.05);
   text-align: center;
-  transition: 0.25s ease;
   border: 1px solid #edf2f7;
+  transition: 0.25s ease;
 }
 
 .product-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
   box-shadow: 0 18px 40px rgba(0,0,0,0.08);
 }
 
@@ -238,15 +236,36 @@ select {
 .cart-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #edf2f7;
+  margin-bottom: 16px;
 }
 
 /* =========================
-   ORDER PAGE
+   ACCOUNT PAGE
 ========================= */
+.account-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.tab-btn {
+  padding: 10px 18px;
+  border-radius: 20px;
+  background: #e2e8f0;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.tab-btn.active {
+  background: #2563eb;
+  color: white;
+}
+
+.account-section {
+  margin-bottom: 40px;
+}
+
 .order-card {
   background: white;
   padding: 24px;
@@ -265,20 +284,15 @@ select {
    FOOTER
 ========================= */
 .footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  height: 60px;
-  background: #f4f8fc;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
+  padding: 20px;
   font-size: 0.85rem;
   color: #64748b;
+  margin-top: 40px;
 }
 
 /* =========================
-   MOBILE OPTIMIZATION
+   MOBILE RESPONSIVE
 ========================= */
 @media (max-width: 768px) {
 
@@ -287,9 +301,12 @@ select {
     padding: 16px;
   }
 
-  .navbar {
-    width: calc(100% - 16px);
-    padding: 14px 18px;
+  h1 {
+    font-size: 26px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
   }
 
   .header-logo {
@@ -299,10 +316,6 @@ select {
   .nav-links {
     gap: 16px;
     font-size: 14px;
-  }
-
-  .product-grid {
-    grid-template-columns: 1fr;
   }
 
 }
