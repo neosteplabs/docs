@@ -8,7 +8,10 @@ import {
   collection,
   doc,
   setDoc,
-  onSnapshot
+  updateDoc,
+  deleteDoc,
+  onSnapshot,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 let currentUser = null;
@@ -33,9 +36,8 @@ const products = [
    Render Products
 ========================= */
 function renderProducts() {
-  const container = document.getElementById("productContainer");
-  if (!container) return;
 
+  const container = document.getElementById("productContainer");
   container.innerHTML = "";
 
   products.forEach(product => {
@@ -66,23 +68,28 @@ function renderProducts() {
 
     addBtn.addEventListener("click", async () => {
 
-      if (!currentUser) return;
-
       const mg = mgSelect.value;
       const qty = parseInt(qtyInput.value);
       const price = product.prices[mg];
       const itemId = `${product.compound}-${mg}`;
 
-      await setDoc(
-        doc(db, "users", currentUser.uid, "cart", itemId),
-        {
+      const cartDocRef = doc(db, "users", currentUser.uid, "cart", itemId);
+      const existing = await getDoc(cartDocRef);
+
+      if (existing.exists()) {
+        await updateDoc(cartDocRef, {
+          quantity: existing.data().quantity + qty
+        });
+      } else {
+        await setDoc(cartDocRef, {
           compound: product.compound,
           mg,
           quantity: qty,
           price
-        }
-      );
+        });
+      }
 
+      qtyInput.value = 1;
     });
 
     container.appendChild(card);
@@ -98,31 +105,71 @@ function listenToCart(uid) {
 
   onSnapshot(cartRef, snapshot => {
 
-    const cartItemsDiv = document.getElementById("cartItems");
-    const badge = document.getElementById("cartBadge");
-    const totalDisplay = document.getElementById("cartTotal");
-
-    if (!cartItemsDiv || !badge || !totalDisplay) return;
-
     let totalQty = 0;
     let totalPrice = 0;
 
+    const cartItemsDiv = document.getElementById("cartItems");
     cartItemsDiv.innerHTML = "";
 
     snapshot.forEach(docSnap => {
 
       const item = docSnap.data();
+      const itemId = docSnap.id;
+
       totalQty += item.quantity;
       totalPrice += item.quantity * item.price;
 
       const row = document.createElement("div");
+      row.className = "cart-row";
+
       row.innerHTML = `
-        <p>${item.compound} ${item.mg}mg
-        (Qty: ${item.quantity}) - $${item.quantity * item.price}</p>
+        <p>
+          ${item.compound} ${item.mg}mg
+          - $${item.price}
+        </p>
+
+        <div class="cart-controls">
+          <button class="qtyMinus">-</button>
+          <span>${item.quantity}</span>
+          <button class="qtyPlus">+</button>
+          <button class="removeBtn">🗑</button>
+        </div>
       `;
+
+      // Decrease quantity
+      row.querySelector(".qtyMinus").addEventListener("click", async () => {
+
+        if (item.quantity <= 1) {
+          await deleteDoc(doc(db, "users", uid, "cart", itemId));
+        } else {
+          await updateDoc(doc(db, "users", uid, "cart", itemId), {
+            quantity: item.quantity - 1
+          });
+        }
+
+      });
+
+      // Increase quantity
+      row.querySelector(".qtyPlus").addEventListener("click", async () => {
+
+        await updateDoc(doc(db, "users", uid, "cart", itemId), {
+          quantity: item.quantity + 1
+        });
+
+      });
+
+      // Remove entirely
+      row.querySelector(".removeBtn").addEventListener("click", async () => {
+
+        await deleteDoc(doc(db, "users", uid, "cart", itemId));
+
+      });
+
       cartItemsDiv.appendChild(row);
 
     });
+
+    const badge = document.getElementById("cartBadge");
 
     if (totalQty > 0) {
       badge.style.display = "inline-block";
@@ -131,7 +178,9 @@ function listenToCart(uid) {
       badge.style.display = "none";
     }
 
-    totalDisplay.textContent = `Total: $${totalPrice}`;
+    document.getElementById("cartTotal").textContent =
+      `Total: $${totalPrice}`;
+
   });
 }
 
@@ -142,22 +191,22 @@ const cartIcon = document.getElementById("cartIcon");
 const drawer = document.getElementById("cartDrawer");
 
 cartIcon?.addEventListener("click", () => {
-  drawer?.classList.toggle("open");
+  drawer.classList.toggle("open");
 });
 
 document.addEventListener("click", e => {
-  if (!drawer?.contains(e.target) && !cartIcon?.contains(e.target)) {
-    drawer?.classList.remove("open");
+  if (!drawer.contains(e.target) && !cartIcon.contains(e.target)) {
+    drawer.classList.remove("open");
   }
 });
 
 /* =========================
-   Auth Load (NO REDIRECTS HERE)
+   Auth Guard
 ========================= */
 onAuthStateChanged(auth, user => {
 
   if (!user) {
-    // Let script.js handle redirect logic
+    window.location.href = "index.html";
     return;
   }
 
