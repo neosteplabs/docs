@@ -1,247 +1,233 @@
 import { auth, db } from "./firebase-config.js";
-
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
 import {
   collection,
-  doc,
-  setDoc,
-  getDoc,
-  updateDoc,
+  getDocs,
+  addDoc,
   deleteDoc,
-  onSnapshot
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  doc,
+  updateDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+const productContainer = document.getElementById("productContainer");
+const cartDrawer = document.getElementById("cartDrawer");
+const cartOverlay = document.getElementById("cartOverlay");
+const cartItems = document.getElementById("cartItems");
+const cartTotal = document.getElementById("cartTotal");
+const cartIcon = document.getElementById("cartIcon");
+const cartBadge = document.getElementById("cartBadge");
+const checkoutBtn = document.getElementById("checkoutBtn");
 
 let currentUser = null;
 
 /* =========================
-   PRODUCT DATA
+   AUTH CHECK
 ========================= */
-const products = [
-  {
-    compound: "NS-RT",
-    image: "assets/images/ns-rt-10.png",
-    prices: { 10: 100, 20: 180, 30: 250 }
-  },
-  {
-    compound: "NS-TZ",
-    image: "assets/images/ns-tz-10.png",
-    prices: { 10: 110, 20: 200, 30: 280 }
-  }
-];
 
-/* =========================
-   RENDER PRODUCTS
-========================= */
-function renderProducts() {
-
-  const container = document.getElementById("productContainer");
-  container.innerHTML = "";
-
-  products.forEach(product => {
-
-    const card = document.createElement("div");
-    card.className = "product-card";
-
-    card.innerHTML = `
-      <img src="${product.image}" class="product-image">
-      <h2>${product.compound}</h2>
-
-      <select class="mgSelect">
-        ${Object.keys(product.prices).map(mg =>
-          `<option value="${mg}">
-            ${mg} mg - $${product.prices[mg]}
-          </option>`
-        ).join("")}
-      </select>
-
-      <button class="btn addToCart">Add to Cart</button>
-    `;
-
-    const addBtn = card.querySelector(".addToCart");
-    const mgSelect = card.querySelector(".mgSelect");
-
-    addBtn.addEventListener("click", async () => {
-
-      if (!currentUser) {
-        alert("You must be logged in.");
-        return;
-      }
-
-      const mg = mgSelect.value;
-      const price = product.prices[mg];
-      const itemId = `${product.compound}-${mg}`;
-
-      try {
-
-        const cartDocRef = doc(
-          db,
-          "users",
-          currentUser.uid,
-          "cart",
-          itemId
-        );
-
-        const existing = await getDoc(cartDocRef);
-
-        if (existing.exists()) {
-
-          const currentQty = existing.data().quantity;
-
-          await updateDoc(cartDocRef, {
-            quantity: currentQty + 1
-          });
-
-        } else {
-
-          await setDoc(cartDocRef, {
-            compound: product.compound,
-            mg,
-            quantity: 1,
-            price
-          });
-
-        }
-
-        alert("Added to cart");
-
-      } catch (err) {
-        console.error("Cart error:", err);
-        alert("Error adding to cart.");
-      }
-
-    });
-
-    container.appendChild(card);
-  });
-}
-
-/* =========================
-   CART LISTENER
-========================= */
-function listenToCart(uid) {
-
-  const cartRef = collection(db, "users", uid, "cart");
-
-  onSnapshot(cartRef, snapshot => {
-
-    const cartItemsDiv = document.getElementById("cartItems");
-    const badge = document.getElementById("cartBadge");
-
-    cartItemsDiv.innerHTML = "";
-
-    let totalQty = 0;
-    let totalPrice = 0;
-
-    snapshot.forEach(docSnap => {
-
-      const item = docSnap.data();
-      const docId = docSnap.id;
-
-      totalQty += item.quantity;
-      totalPrice += item.quantity * item.price;
-
-      const row = document.createElement("div");
-      row.className = "cart-row";
-
-      row.innerHTML = `
-        <div class="cart-left">
-          <strong>${item.compound} ${item.mg}mg</strong>
-          <div class="cart-price">$${item.price} each</div>
-        </div>
-
-        <div class="cart-right">
-          <button class="qty-btn minus">-</button>
-          <span class="qty">${item.quantity}</span>
-          <button class="qty-btn plus">+</button>
-          <button class="remove-btn">×</button>
-        </div>
-      `;
-
-      const minusBtn = row.querySelector(".minus");
-      const plusBtn = row.querySelector(".plus");
-      const removeBtn = row.querySelector(".remove-btn");
-
-      minusBtn.addEventListener("click", async () => {
-
-        if (item.quantity > 1) {
-          await updateDoc(
-            doc(db, "users", uid, "cart", docId),
-            { quantity: item.quantity - 1 }
-          );
-        } else {
-          await deleteDoc(
-            doc(db, "users", uid, "cart", docId)
-          );
-        }
-
-      });
-
-      plusBtn.addEventListener("click", async () => {
-
-        await updateDoc(
-          doc(db, "users", uid, "cart", docId),
-          { quantity: item.quantity + 1 }
-        );
-
-      });
-
-      removeBtn.addEventListener("click", async () => {
-
-        await deleteDoc(
-          doc(db, "users", uid, "cart", docId)
-        );
-
-      });
-
-      cartItemsDiv.appendChild(row);
-    });
-
-    /* Update badge */
-    if (totalQty > 0) {
-      badge.style.display = "inline-block";
-      badge.textContent = totalQty;
-    } else {
-      badge.style.display = "none";
-    }
-
-    document.getElementById("cartTotal").textContent =
-      `Total: $${totalPrice}`;
-
-  });
-}
-
-/* =========================
-   DRAWER TOGGLE
-========================= */
-const cartIcon = document.getElementById("cartIcon");
-const drawer = document.getElementById("cartDrawer");
-
-cartIcon?.addEventListener("click", () => {
-  drawer.classList.toggle("open");
-});
-
-document.addEventListener("click", e => {
-  if (!drawer.contains(e.target) && !cartIcon.contains(e.target)) {
-    drawer.classList.remove("open");
-  }
-});
-
-/* =========================
-   AUTH GUARD
-========================= */
-onAuthStateChanged(auth, user => {
-
+onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "index.html";
     return;
   }
 
   currentUser = user;
+  loadProducts();
+  loadCart();
+});
 
-  renderProducts();
-  listenToCart(user.uid);
+/* =========================
+   LOAD PRODUCTS
+========================= */
 
+async function loadProducts() {
+  productContainer.innerHTML = "";
+
+  const snapshot = await getDocs(collection(db, "products"));
+
+  snapshot.forEach(docSnap => {
+    const product = docSnap.data();
+
+    if (!product.visible) return;
+
+    const card = document.createElement("div");
+    card.className = "product-card";
+
+    card.innerHTML = `
+      <img src="${product.image}" class="product-image">
+      <h3>${product.code}</h3>
+
+      <select class="mgSelect">
+        ${product.options.map(opt =>
+          `<option value="${opt.mg}" data-price="${opt.price}">
+            ${opt.mg} - $${opt.price}
+          </option>`
+        ).join("")}
+      </select>
+
+      <button class="btn addBtn">Add to Cart</button>
+    `;
+
+    const addBtn = card.querySelector(".addBtn");
+    const select = card.querySelector(".mgSelect");
+
+    addBtn.addEventListener("click", async () => {
+      const selectedOption = select.options[select.selectedIndex];
+      const mg = selectedOption.value;
+      const price = parseFloat(selectedOption.dataset.price);
+
+      await addDoc(
+        collection(db, "users", currentUser.uid, "cart"),
+        {
+          name: product.code,
+          mg,
+          price,
+          qty: 1
+        }
+      );
+
+      alert("Added to cart");
+      loadCart();
+    });
+
+    productContainer.appendChild(card);
+  });
+}
+
+/* =========================
+   LOAD CART
+========================= */
+
+async function loadCart() {
+  cartItems.innerHTML = "";
+
+  const snapshot = await getDocs(
+    collection(db, "users", currentUser.uid, "cart")
+  );
+
+  let total = 0;
+  let itemCount = 0;
+
+  snapshot.forEach(docSnap => {
+    const item = docSnap.data();
+    total += item.price * item.qty;
+    itemCount += item.qty;
+
+    const itemDiv = document.createElement("div");
+    itemDiv.className = "cart-item";
+
+    itemDiv.innerHTML = `
+      <div>
+        <strong>${item.name} ${item.mg}</strong><br>
+        $${item.price} each
+      </div>
+
+      <div class="qty-controls">
+        <button class="minus">-</button>
+        <span>${item.qty}</span>
+        <button class="plus">+</button>
+        <button class="remove">×</button>
+      </div>
+    `;
+
+    const minusBtn = itemDiv.querySelector(".minus");
+    const plusBtn = itemDiv.querySelector(".plus");
+    const removeBtn = itemDiv.querySelector(".remove");
+
+    minusBtn.addEventListener("click", async () => {
+      if (item.qty > 1) {
+        await updateDoc(
+          doc(db, "users", currentUser.uid, "cart", docSnap.id),
+          { qty: item.qty - 1 }
+        );
+      }
+      loadCart();
+    });
+
+    plusBtn.addEventListener("click", async () => {
+      await updateDoc(
+        doc(db, "users", currentUser.uid, "cart", docSnap.id),
+        { qty: item.qty + 1 }
+      );
+      loadCart();
+    });
+
+    removeBtn.addEventListener("click", async () => {
+      await deleteDoc(
+        doc(db, "users", currentUser.uid, "cart", docSnap.id)
+      );
+      loadCart();
+    });
+
+    cartItems.appendChild(itemDiv);
+  });
+
+  cartTotal.innerText = `Total: $${total}`;
+
+  if (itemCount > 0) {
+    cartBadge.style.display = "inline-block";
+    cartBadge.innerText = itemCount;
+  } else {
+    cartBadge.style.display = "none";
+  }
+}
+
+/* =========================
+   CART DRAWER
+========================= */
+
+cartIcon.addEventListener("click", () => {
+  cartDrawer.classList.add("open");
+  cartOverlay.classList.add("open");
+});
+
+cartOverlay.addEventListener("click", () => {
+  cartDrawer.classList.remove("open");
+  cartOverlay.classList.remove("open");
+});
+
+/* =========================
+   CHECKOUT
+========================= */
+
+checkoutBtn.addEventListener("click", async () => {
+
+  const snapshot = await getDocs(
+    collection(db, "users", currentUser.uid, "cart")
+  );
+
+  if (snapshot.empty) return;
+
+  let items = [];
+  let total = 0;
+
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    items.push(data);
+    total += data.price * data.qty;
+  });
+
+  // CREATE ORDER
+  await addDoc(
+    collection(db, "users", currentUser.uid, "orders"),
+    {
+      items,
+      total,
+      createdAt: serverTimestamp()
+    }
+  );
+
+  // CLEAR CART
+  for (const docSnap of snapshot.docs) {
+    await deleteDoc(
+      doc(db, "users", currentUser.uid, "cart", docSnap.id)
+    );
+  }
+
+  alert("Order placed successfully");
+
+  cartDrawer.classList.remove("open");
+  cartOverlay.classList.remove("open");
+
+  window.location.href = "orders.html";
 });
