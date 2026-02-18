@@ -8,10 +8,7 @@ import {
   collection,
   doc,
   setDoc,
-  updateDoc,
-  deleteDoc,
-  onSnapshot,
-  getDoc
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 let currentUser = null;
@@ -45,54 +42,103 @@ function renderProducts() {
     const card = document.createElement("div");
     card.className = "product-card";
 
+    let quantityState = {};
+
+    const mgRows = Object.keys(product.prices).map(mg => {
+
+      quantityState[mg] = 0;
+
+      return `
+        <div class="mg-row" data-mg="${mg}">
+          <span class="mg-label">${mg} mg</span>
+          <span class="mg-price">$${product.prices[mg]}</span>
+
+          <div class="qty-controls">
+            <button class="qty-btn minus">−</button>
+            <span class="qty-value" id="qty-${product.compound}-${mg}">0</span>
+            <button class="qty-btn plus">+</button>
+          </div>
+        </div>
+      `;
+
+    }).join("");
+
     card.innerHTML = `
       <img src="${product.image}" class="product-image">
       <h2>${product.compound}</h2>
 
-      <select class="mgSelect">
-        ${Object.keys(product.prices).map(mg =>
-          `<option value="${mg}">
-            ${mg} mg - $${product.prices[mg]}
-          </option>`
-        ).join("")}
-      </select>
+      <div class="mg-container">
+        ${mgRows}
+      </div>
 
-      <input type="number" class="qtyInput" value="1" min="1">
-
-      <button class="btn addToCart">Add to Cart</button>
+      <button class="btn addSelected">Add Selected to Cart</button>
     `;
 
-    const addBtn = card.querySelector(".addToCart");
-    const mgSelect = card.querySelector(".mgSelect");
-    const qtyInput = card.querySelector(".qtyInput");
+    /* =========================
+       Quantity Controls
+    ========================= */
 
-    addBtn.addEventListener("click", async () => {
+    card.querySelectorAll(".mg-row").forEach(row => {
 
-      const mg = mgSelect.value;
-      const qty = parseInt(qtyInput.value);
-      const price = product.prices[mg];
-      const itemId = `${product.compound}-${mg}`;
+      const mg = row.dataset.mg;
+      const minusBtn = row.querySelector(".minus");
+      const plusBtn = row.querySelector(".plus");
+      const qtyDisplay = row.querySelector(".qty-value");
 
-      const cartDocRef = doc(db, "users", currentUser.uid, "cart", itemId);
-      const existing = await getDoc(cartDocRef);
+      minusBtn.addEventListener("click", () => {
+        if (quantityState[mg] > 0) {
+          quantityState[mg]--;
+          qtyDisplay.textContent = quantityState[mg];
+        }
+      });
 
-      if (existing.exists()) {
-        await updateDoc(cartDocRef, {
-          quantity: existing.data().quantity + qty
-        });
-      } else {
-        await setDoc(cartDocRef, {
-          compound: product.compound,
-          mg,
-          quantity: qty,
-          price
-        });
+      plusBtn.addEventListener("click", () => {
+        quantityState[mg]++;
+        qtyDisplay.textContent = quantityState[mg];
+      });
+
+    });
+
+    /* =========================
+       Add Selected to Cart
+    ========================= */
+
+    card.querySelector(".addSelected").addEventListener("click", async () => {
+
+      for (let mg in quantityState) {
+
+        const qty = quantityState[mg];
+
+        if (qty > 0) {
+
+          const price = product.prices[mg];
+          const itemId = `${product.compound}-${mg}`;
+
+          await setDoc(
+            doc(db, "users", currentUser.uid, "cart", itemId),
+            {
+              compound: product.compound,
+              mg,
+              quantity: qty,
+              price
+            }
+          );
+        }
       }
 
-      qtyInput.value = 1;
+      // Reset quantities visually
+      card.querySelectorAll(".qty-value").forEach(el => {
+        el.textContent = "0";
+      });
+
+      Object.keys(quantityState).forEach(mg => {
+        quantityState[mg] = 0;
+      });
+
     });
 
     container.appendChild(card);
+
   });
 }
 
@@ -114,57 +160,14 @@ function listenToCart(uid) {
     snapshot.forEach(docSnap => {
 
       const item = docSnap.data();
-      const itemId = docSnap.id;
-
       totalQty += item.quantity;
       totalPrice += item.quantity * item.price;
 
       const row = document.createElement("div");
-      row.className = "cart-row";
-
       row.innerHTML = `
-        <p>
-          ${item.compound} ${item.mg}mg
-          - $${item.price}
-        </p>
-
-        <div class="cart-controls">
-          <button class="qtyMinus">-</button>
-          <span>${item.quantity}</span>
-          <button class="qtyPlus">+</button>
-          <button class="removeBtn">🗑</button>
-        </div>
+        <p>${item.compound} ${item.mg}mg
+        (Qty: ${item.quantity}) - $${item.quantity * item.price}</p>
       `;
-
-      // Decrease quantity
-      row.querySelector(".qtyMinus").addEventListener("click", async () => {
-
-        if (item.quantity <= 1) {
-          await deleteDoc(doc(db, "users", uid, "cart", itemId));
-        } else {
-          await updateDoc(doc(db, "users", uid, "cart", itemId), {
-            quantity: item.quantity - 1
-          });
-        }
-
-      });
-
-      // Increase quantity
-      row.querySelector(".qtyPlus").addEventListener("click", async () => {
-
-        await updateDoc(doc(db, "users", uid, "cart", itemId), {
-          quantity: item.quantity + 1
-        });
-
-      });
-
-      // Remove entirely
-      row.querySelector(".removeBtn").addEventListener("click", async () => {
-
-        await deleteDoc(doc(db, "users", uid, "cart", itemId));
-
-      });
-
       cartItemsDiv.appendChild(row);
 
     });
