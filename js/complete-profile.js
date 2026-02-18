@@ -12,7 +12,40 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const saveBtn = document.getElementById("saveProfile");
+const zipInput = document.getElementById("zip");
+const stateSelect = document.getElementById("state");
 
+/* =========================
+   ZIP → STATE AUTO DETECT
+========================= */
+async function detectStateFromZip(zip) {
+
+  if (!/^\d{5}$/.test(zip)) return;
+
+  try {
+    const response = await fetch(`https://api.zippopotam.us/us/${zip}`);
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const stateAbbr = data.places?.[0]?.["state abbreviation"];
+
+    if (stateAbbr && stateSelect) {
+      stateSelect.value = stateAbbr;
+    }
+
+  } catch (error) {
+    console.log("ZIP lookup failed (non-blocking)");
+  }
+}
+
+zipInput?.addEventListener("blur", (e) => {
+  detectStateFromZip(e.target.value.trim());
+});
+
+
+/* =========================
+   AUTH CHECK
+========================= */
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -20,10 +53,12 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Auto-fill existing profile data
   const userRef = doc(db, "users", user.uid);
   const userSnap = await getDoc(userRef);
 
+  /* =========================
+     AUTO-FILL IF EXISTS
+  ========================= */
   if (userSnap.exists()) {
     const data = userSnap.data();
 
@@ -35,6 +70,9 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById("phone").value = data.phone || "";
   }
 
+  /* =========================
+     SAVE PROFILE
+  ========================= */
   saveBtn?.addEventListener("click", async () => {
 
     const address1 = document.getElementById("address1").value.trim();
@@ -50,7 +88,9 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
-    // Referral validation
+    /* =========================
+       REFERRAL VALIDATION
+    ========================= */
     if (referralInput) {
 
       const referralRef = doc(db, "referrals", referralInput);
