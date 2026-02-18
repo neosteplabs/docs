@@ -10,6 +10,7 @@ import {
   doc,
   setDoc,
   getDocs,
+  getDoc,
   deleteDoc,
   onSnapshot,
   serverTimestamp
@@ -18,28 +19,23 @@ import {
 /* =========================
    DOM ELEMENTS
 ========================= */
-
 const logoutBtn = document.getElementById("logoutBtn");
 const cartIcon = document.getElementById("cartIcon");
 const drawer = document.getElementById("cartDrawer");
 const overlay = document.getElementById("cartOverlay");
 const checkoutBtn = document.getElementById("checkoutBtn");
 
-let currentUser = null;
-
-/* =========================
-   Logout
-========================= */
-
 logoutBtn?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "index.html";
 });
 
-/* =========================
-   Product Definitions
-========================= */
+let currentUser = null;
+let profileComplete = false;
 
+/* =========================
+   PRODUCT DEFINITIONS
+========================= */
 const products = [
   {
     compound: "NS-RT",
@@ -54,13 +50,11 @@ const products = [
 ];
 
 /* =========================
-   Render Products
+   RENDER PRODUCTS
 ========================= */
-
 function renderProducts() {
-  const container = document.getElementById("productContainer");
-  if (!container) return;
 
+  const container = document.getElementById("productContainer");
   container.innerHTML = "";
 
   products.forEach(product => {
@@ -91,7 +85,11 @@ function renderProducts() {
 
     addBtn.addEventListener("click", async () => {
 
-      if (!currentUser) return;
+      if (!profileComplete) {
+        alert("Please complete your profile before placing orders.");
+        window.location.href = "complete-profile.html";
+        return;
+      }
 
       const mg = mgSelect.value;
       const qty = parseInt(qtyInput.value);
@@ -116,9 +114,8 @@ function renderProducts() {
 }
 
 /* =========================
-   Cart Listener (Realtime)
+   CART LISTENER
 ========================= */
-
 function listenToCart(uid) {
 
   const cartRef = collection(db, "users", uid, "cart");
@@ -129,8 +126,6 @@ function listenToCart(uid) {
     let totalPrice = 0;
 
     const cartItemsDiv = document.getElementById("cartItems");
-    if (!cartItemsDiv) return;
-
     cartItemsDiv.innerHTML = "";
 
     snapshot.forEach(docSnap => {
@@ -151,33 +146,33 @@ function listenToCart(uid) {
       `;
 
       cartItemsDiv.appendChild(row);
+
     });
 
     const badge = document.getElementById("cartBadge");
 
-    if (badge) {
-      if (totalQty > 0) {
-        badge.style.display = "inline-block";
-        badge.textContent = totalQty;
-      } else {
-        badge.style.display = "none";
-      }
+    if (totalQty > 0) {
+      badge.style.display = "inline-block";
+      badge.textContent = totalQty;
+    } else {
+      badge.style.display = "none";
     }
 
-    const totalElement = document.getElementById("cartTotal");
-    if (totalElement) {
-      totalElement.textContent = `Total: $${totalPrice}`;
-    }
+    document.getElementById("cartTotal").textContent =
+      `Total: $${totalPrice}`;
   });
 }
 
 /* =========================
-   Submit Order
+   SUBMIT ORDER
 ========================= */
-
 async function submitOrder() {
 
-  if (!currentUser) return;
+  if (!profileComplete) {
+    alert("Please complete your profile before placing orders.");
+    window.location.href = "complete-profile.html";
+    return;
+  }
 
   const cartRef = collection(db, "users", currentUser.uid, "cart");
   const cartSnap = await getDocs(cartRef);
@@ -207,50 +202,42 @@ async function submitOrder() {
     createdAt: serverTimestamp()
   };
 
-  // Save to user's orders
   await setDoc(
     doc(db, "users", currentUser.uid, "orders", orderId),
     orderData
   );
 
-  // Save to global admin orders
   await setDoc(
     doc(db, "orders", orderId),
     orderData
   );
 
-  // Clear cart
   for (const docSnap of cartSnap.docs) {
     await deleteDoc(docSnap.ref);
   }
 
   alert("Order submitted successfully.");
-
-  drawer?.classList.remove("open");
-  overlay?.classList.remove("open");
 }
 
 checkoutBtn?.addEventListener("click", submitOrder);
 
 /* =========================
-   Drawer Toggle
+   DRAWER TOGGLE
 ========================= */
-
 cartIcon?.addEventListener("click", () => {
-  drawer?.classList.toggle("open");
-  overlay?.classList.toggle("open");
+  drawer.classList.toggle("open");
+  overlay.classList.toggle("open");
 });
 
 overlay?.addEventListener("click", () => {
-  drawer?.classList.remove("open");
-  overlay?.classList.remove("open");
+  drawer.classList.remove("open");
+  overlay.classList.remove("open");
 });
 
 /* =========================
-   Auth Guard
+   AUTH + PROFILE CHECK
 ========================= */
-
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
     window.location.href = "index.html";
@@ -259,6 +246,13 @@ onAuthStateChanged(auth, user => {
 
   currentUser = user;
 
+  const userSnap = await getDoc(doc(db, "users", user.uid));
+
+  if (userSnap.exists()) {
+    profileComplete = userSnap.data().profileComplete === true;
+  }
+
   renderProducts();
   listenToCart(user.uid);
+
 });
