@@ -11,16 +11,24 @@
 
 <header class="navbar">
   <div class="nav-container">
-    <a href="catalog.html">
+
+    <a href="index.html">
       <img src="assets/logo/neostep-logo-header.jpg" class="header-logo">
     </a>
 
-    <ul class="nav-links">
+    <!-- Hidden until login -->
+    <ul class="nav-links" id="navLinks" style="display:none;">
       <li><a href="catalog.html">Catalog</a></li>
       <li><a href="orders.html">Orders</a></li>
-      <li id="cartIcon">🛒 <span id="cartBadge">0</span></li>
-      <li id="logoutBtn">Logout</li>
+
+      <li id="cartIcon" style="position:relative; cursor:pointer;">
+        🛒
+        <span id="cartBadge">0</span>
+      </li>
+
+      <li id="logoutBtn" style="cursor:pointer;">Logout</li>
     </ul>
+
   </div>
 </header>
 
@@ -32,27 +40,21 @@
   </section>
 
   <section class="auth-section" id="authSection">
-    <div class="auth-card">
+    <h2>Login / Register</h2>
 
-      <h2>Login / Register</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
 
-      <input type="email" id="email" placeholder="Email">
-      <input type="password" id="password" placeholder="Password">
-
-      <div class="auth-buttons">
-        <button id="registerBtn">Register</button>
-        <button id="loginBtn">Login</button>
-      </div>
-
-      <p id="auth-message"></p>
-
+    <div class="auth-buttons">
+      <button id="registerBtn">Register</button>
+      <button id="loginBtn">Login</button>
     </div>
   </section>
 
 </main>
 
 <footer class="footer">
-  © 2026 NeoStep. Research use only. Not for human or veterinary use.
+  © 2026 NeoStep. Research use only.
 </footer>
 
 <script type="module" src="js/script.js"></script>
