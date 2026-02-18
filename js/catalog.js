@@ -8,16 +8,15 @@ import {
   collection,
   doc,
   setDoc,
-  updateDoc,
+  getDocs,
   deleteDoc,
-  onSnapshot,
-  getDoc
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 let currentUser = null;
 
 /* =========================
-   PRODUCT DEFINITIONS
+   Product Definitions
 ========================= */
 const products = [
   {
@@ -33,7 +32,21 @@ const products = [
 ];
 
 /* =========================
-   RENDER PRODUCTS
+   Generate Professional Order ID
+========================= */
+function generateOrderId() {
+  const now = new Date();
+  const datePart =
+    now.getFullYear().toString() +
+    String(now.getMonth() + 1).padStart(2, "0") +
+    String(now.getDate()).padStart(2, "0");
+
+  const randomPart = Math.floor(1000 + Math.random() * 9000);
+  return `NS-${datePart}-${randomPart}`;
+}
+
+/* =========================
+   Render Products
 ========================= */
 function renderProducts() {
   const container = document.getElementById("productContainer");
@@ -46,7 +59,6 @@ function renderProducts() {
 
     card.innerHTML = `
       <img src="${product.image}" class="product-image">
-
       <h2>${product.compound}</h2>
 
       <select class="mgSelect">
@@ -57,34 +69,33 @@ function renderProducts() {
         ).join("")}
       </select>
 
+      <input type="number" class="qtyInput" value="1" min="1">
+
       <button class="btn addToCart">Add to Cart</button>
     `;
 
     const addBtn = card.querySelector(".addToCart");
     const mgSelect = card.querySelector(".mgSelect");
+    const qtyInput = card.querySelector(".qtyInput");
 
     addBtn.addEventListener("click", async () => {
 
       const mg = mgSelect.value;
+      const qty = parseInt(qtyInput.value);
       const price = product.prices[mg];
       const itemId = `${product.compound}-${mg}`;
 
-      const itemRef = doc(db, "users", currentUser.uid, "cart", itemId);
-      const existing = await getDoc(itemRef);
-
-      if (existing.exists()) {
-        await updateDoc(itemRef, {
-          quantity: existing.data().quantity + 1
-        });
-      } else {
-        await setDoc(itemRef, {
+      await setDoc(
+        doc(db, "users", currentUser.uid, "cart", itemId),
+        {
           compound: product.compound,
           mg,
-          quantity: 1,
+          quantity: qty,
           price
-        });
-      }
+        }
+      );
 
+      alert("Added to cart");
     });
 
     container.appendChild(card);
@@ -92,105 +103,58 @@ function renderProducts() {
 }
 
 /* =========================
-   CART LISTENER (REALTIME)
+   Submit Order
 ========================= */
-function listenToCart(uid) {
+async function submitOrder() {
 
-  const cartRef = collection(db, "users", uid, "cart");
+  const cartSnapshot = await getDocs(
+    collection(db, "users", currentUser.uid, "cart")
+  );
 
-  onSnapshot(cartRef, snapshot => {
+  if (cartSnapshot.empty) {
+    alert("Your cart is empty.");
+    return;
+  }
 
-    const cartItemsDiv = document.getElementById("cartItems");
-    const cartTotal = document.getElementById("cartTotal");
-    const badge = document.getElementById("cartBadge");
+  const items = [];
+  let total = 0;
 
-    cartItemsDiv.innerHTML = "";
-
-    let totalQty = 0;
-    let totalPrice = 0;
-
-    snapshot.forEach(docSnap => {
-
-      const item = docSnap.data();
-      const id = docSnap.id;
-
-      totalQty += item.quantity;
-      totalPrice += item.quantity * item.price;
-
-      const row = document.createElement("div");
-      row.className = "cart-item";
-
-      row.innerHTML = `
-        <div class="cart-item-info">
-          <strong>${item.compound} ${item.mg}mg</strong>
-          <span class="cart-price">$${item.price} each</span>
-        </div>
-
-        <div class="cart-controls">
-          <button class="cart-btn decrease">−</button>
-          <span>${item.quantity}</span>
-          <button class="cart-btn increase">+</button>
-          <button class="remove-btn">✕</button>
-        </div>
-      `;
-
-      // Increase
-      row.querySelector(".increase").addEventListener("click", async () => {
-        await updateDoc(doc(db, "users", uid, "cart", id), {
-          quantity: item.quantity + 1
-        });
-      });
-
-      // Decrease
-      row.querySelector(".decrease").addEventListener("click", async () => {
-        if (item.quantity > 1) {
-          await updateDoc(doc(db, "users", uid, "cart", id), {
-            quantity: item.quantity - 1
-          });
-        } else {
-          await deleteDoc(doc(db, "users", uid, "cart", id));
-        }
-      });
-
-      // Remove
-      row.querySelector(".remove-btn").addEventListener("click", async () => {
-        await deleteDoc(doc(db, "users", uid, "cart", id));
-      });
-
-      cartItemsDiv.appendChild(row);
-    });
-
-    // Update badge
-    if (totalQty > 0) {
-      badge.style.display = "inline-block";
-      badge.textContent = totalQty;
-    } else {
-      badge.style.display = "none";
-    }
-
-    cartTotal.innerHTML = `<strong>Total: $${totalPrice}</strong>`;
+  cartSnapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    items.push(data);
+    total += data.quantity * data.price;
   });
+
+  const orderId = generateOrderId();
+
+  await setDoc(doc(db, "orders", orderId), {
+    orderId,
+    userId: currentUser.uid,
+    email: currentUser.email,
+    items,
+    total,
+    status: "pending",
+    createdAt: serverTimestamp()
+  });
+
+  // Clear cart
+  const deletePromises = [];
+  cartSnapshot.forEach(docSnap => {
+    deletePromises.push(deleteDoc(docSnap.ref));
+  });
+  await Promise.all(deletePromises);
+
+  window.location.href = `order-confirmation.html?orderId=${orderId}`;
 }
 
 /* =========================
-   DRAWER TOGGLE
+   Attach Checkout Button
 ========================= */
-const cartIcon = document.getElementById("cartIcon");
-const drawer = document.getElementById("cartDrawer");
-const overlay = document.getElementById("cartOverlay");
-
-cartIcon?.addEventListener("click", () => {
-  drawer.classList.toggle("open");
-  overlay.classList.toggle("open");
-});
-
-overlay?.addEventListener("click", () => {
-  drawer.classList.remove("open");
-  overlay.classList.remove("open");
-});
+const checkoutBtn = document.getElementById("checkoutBtn");
+checkoutBtn?.addEventListener("click", submitOrder);
 
 /* =========================
-   AUTH GUARD
+   Auth Guard
 ========================= */
 onAuthStateChanged(auth, user => {
 
@@ -201,6 +165,4 @@ onAuthStateChanged(auth, user => {
 
   currentUser = user;
   renderProducts();
-  listenToCart(user.uid);
-
 });
