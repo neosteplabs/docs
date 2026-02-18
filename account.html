@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My Account | NeoStep</title>
-  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="stylesheet" href="css/styles.css?v=7" />
 </head>
 
 <body>
 
 <header class="navbar">
   <div class="nav-container">
-
     <a href="catalog.html">
       <img src="assets/logo/neostep-logo-header.jpg" class="header-logo">
     </a>
@@ -19,53 +18,40 @@
     <ul class="nav-links">
       <li><a href="catalog.html">Catalog</a></li>
       <li><a href="account.html" class="active">Account</a></li>
-
-      <li id="cartIcon">
-        🛒
-        <span id="cartBadge">0</span>
-      </li>
-
+      <li id="cartIcon">🛒<span id="cartBadge">0</span></li>
       <li id="logoutBtn">Logout</li>
     </ul>
-
   </div>
 </header>
 
-<main class="account-layout">
+<main>
 
-  <!-- SIDEBAR -->
-  <aside class="account-sidebar">
-    <h3>My Account</h3>
-    <ul>
-      <li class="sidebar-link active" data-tab="profileTab">Profile</li>
-      <li class="sidebar-link" data-tab="ordersTab">Order History</li>
-    </ul>
-  </aside>
+<h1>My Account</h1>
 
-  <!-- CONTENT -->
-  <section class="account-content">
+<div class="account-tabs">
+  <button id="profileTab" class="tab-btn active">Profile</button>
+  <button id="ordersTab" class="tab-btn">Order History</button>
+</div>
 
-    <!-- PROFILE TAB -->
-    <div id="profileTab" class="account-tab active">
-      <h2>Profile Information</h2>
+<!-- PROFILE SECTION -->
+<div id="profileSection" class="account-section">
 
-      <div class="profile-box">
-        <div><strong>Email:</strong> <span id="profileEmail"></span></div>
-        <div><strong>Phone:</strong> <span id="profilePhone"></span></div>
-        <div><strong>Address:</strong> <span id="profileAddress"></span></div>
-        <div><strong>Referral Code:</strong> <span id="profileReferral"></span></div>
-      </div>
+  <h2>Profile Information</h2>
 
-      <button id="editProfileBtn" class="btn">Edit Profile</button>
-    </div>
+  <div id="profileInfo"></div>
 
-    <!-- ORDERS TAB -->
-    <div id="ordersTab" class="account-tab">
-      <h2>Order History</h2>
-      <div id="ordersContainer"></div>
-    </div>
+  <a href="complete-profile.html" class="btn">Edit Profile</a>
 
-  </section>
+</div>
+
+<!-- ORDERS SECTION -->
+<div id="ordersSection" class="account-section" style="display:none;">
+
+  <h2>Order History</h2>
+
+  <div id="ordersContainer"></div>
+
+</div>
 
 </main>
 
