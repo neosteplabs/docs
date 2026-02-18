@@ -103,12 +103,17 @@ button:hover, .btn:hover {
 }
 
 .nav-links a,
-.nav-links li {
+#logoutBtn {
   text-decoration: none;
   color: #1e293b;
   font-weight: 500;
   font-size: 15px;
   cursor: pointer;
+}
+
+#logoutBtn:hover,
+.nav-links a:hover {
+  color: #2563eb;
 }
 
 .nav-links a:hover {
