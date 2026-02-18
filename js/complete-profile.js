@@ -1,8 +1,7 @@
 import { auth, db } from "./firebase-config.js";
 
 import {
-  onAuthStateChanged,
-  signOut
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
@@ -13,30 +12,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const saveBtn = document.getElementById("saveProfile");
-const logoutBtn = document.getElementById("logoutBtn");
 
-const hasReferralCheckbox = document.getElementById("hasReferral");
-const referralInput = document.getElementById("referralCode");
-const referralError = document.getElementById("referralError");
-
-/* =========================
-   Logout
-========================= */
-logoutBtn?.addEventListener("click", async () => {
-  await signOut(auth);
-  window.location.href = "index.html";
-});
-
-/* =========================
-   Toggle Referral Field
-========================= */
-hasReferralCheckbox?.addEventListener("change", () => {
-  referralInput.style.display = hasReferralCheckbox.checked ? "block" : "none";
-});
-
-/* =========================
-   Auth Guard
-========================= */
 onAuthStateChanged(auth, async (user) => {
 
   if (!user) {
@@ -44,25 +20,19 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
+  // Auto-fill existing profile data
   const userRef = doc(db, "users", user.uid);
-  const snap = await getDoc(userRef);
+  const userSnap = await getDoc(userRef);
 
-  if (snap.exists()) {
-    const data = snap.data();
+  if (userSnap.exists()) {
+    const data = userSnap.data();
 
-    // Auto-fill if returning
     document.getElementById("address1").value = data.address1 || "";
     document.getElementById("address2").value = data.address2 || "";
     document.getElementById("city").value = data.city || "";
     document.getElementById("state").value = data.state || "";
     document.getElementById("zip").value = data.zip || "";
     document.getElementById("phone").value = data.phone || "";
-
-    if (data.referredBy) {
-      hasReferralCheckbox.checked = true;
-      referralInput.style.display = "block";
-      referralInput.value = data.referredBy;
-    }
   }
 
   saveBtn?.addEventListener("click", async () => {
@@ -73,11 +43,32 @@ onAuthStateChanged(auth, async (user) => {
     const state = document.getElementById("state").value;
     const zip = document.getElementById("zip").value.trim();
     const phone = document.getElementById("phone").value.trim();
-    const referralCode = referralInput.value.trim();
+    const referralInput = document.getElementById("referralInput").value.trim().toUpperCase();
 
     if (!address1 || !city || !state || !zip || !phone) {
       alert("Please complete all required fields.");
       return;
+    }
+
+    // Referral validation
+    if (referralInput) {
+
+      const referralRef = doc(db, "referrals", referralInput);
+      const referralSnap = await getDoc(referralRef);
+
+      if (!referralSnap.exists()) {
+        alert("Invalid referral code.");
+        return;
+      }
+
+      if (referralSnap.data().ownerUid === user.uid) {
+        alert("You cannot refer yourself.");
+        return;
+      }
+
+      await updateDoc(userRef, {
+        referredBy: referralInput
+      });
     }
 
     await updateDoc(userRef, {
@@ -87,7 +78,6 @@ onAuthStateChanged(auth, async (user) => {
       state,
       zip,
       phone,
-      referredBy: referralCode || null,
       profileComplete: true,
       profileCompletedAt: serverTimestamp()
     });
