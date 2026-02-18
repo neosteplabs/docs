@@ -4,39 +4,40 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NeoStep Secure Portal</title>
-  <link rel="stylesheet" href="css/styles.css?v=4" />
+  <link rel="stylesheet" href="css/styles.css?v=6" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
 <header class="navbar">
   <div class="nav-container">
 
-    <a href="index.html">
+    <a href="catalog.html">
       <img src="assets/logo/neostep-logo-header.jpg" class="header-logo">
     </a>
 
-    <!-- Hidden until login -->
-    <ul class="nav-links" id="navLinks" style="display:none;">
+    <ul class="nav-links">
       <li><a href="catalog.html">Catalog</a></li>
-      <li><a href="orders.html">Orders</a></li>
+      <li><a href="account.html">Account</a></li>
 
-      <li id="cartIcon" style="position:relative; cursor:pointer;">
+      <li id="cartIcon">
         🛒
         <span id="cartBadge">0</span>
       </li>
 
-      <li id="logoutBtn" style="cursor:pointer;">Logout</li>
+      <li id="logoutBtn">Logout</li>
     </ul>
 
   </div>
 </header>
 
-<main>
+<main id="content">
 
   <section class="hero">
     <h1>NeoStep Secure Research Portal</h1>
     <p>Verified laboratory access only.</p>
+    <a href="catalog.html" class="btn">Access Catalog</a>
   </section>
 
   <section class="auth-section" id="authSection">
@@ -49,6 +50,7 @@
       <button id="registerBtn">Register</button>
       <button id="loginBtn">Login</button>
     </div>
+
   </section>
 
 </main>
