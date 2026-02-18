@@ -57,7 +57,7 @@ button:hover {
 }
 
 /* =========================
-   NAVBAR
+   NAVBAR (PILL HEADER)
 ========================= */
 .navbar {
   position: fixed;
@@ -67,21 +67,26 @@ button:hover {
   width: 95%;
   max-width: 1200px;
   background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(10px);
-  border-radius: 20px;
-  padding: 15px 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 22px;
+  padding: 18px 32px;
+  box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   z-index: 1000;
 }
 
 .nav-container {
+  width: 100%;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .header-logo {
   height: 60px;
+  width: auto;
 }
 
 /* NAV LINKS */
@@ -89,7 +94,9 @@ button:hover {
   list-style: none;
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 28px;
+  margin: 0;
+  padding: 0;
 }
 
 .nav-links li {
@@ -98,8 +105,9 @@ button:hover {
 
 .nav-links a {
   text-decoration: none;
-  color: #334155;
+  color: #1e293b;
   font-weight: 500;
+  font-size: 15px;
   transition: 0.2s ease;
 }
 
