@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Complete Profile | NeoStep</title>
-  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="stylesheet" href="css/styles.css?v=8" />
 </head>
-
 <body>
 
 <header class="navbar">
@@ -32,25 +31,37 @@
 </header>
 
 <main>
-  <h1>Complete Your Profile</h1>
 
-  <input type="text" id="phone" placeholder="Phone Number">
-  <input type="text" id="address1" placeholder="Address Line 1">
-  <input type="text" id="address2" placeholder="Address Line 2 (Optional)">
-  <input type="text" id="city" placeholder="City">
+  <div class="profile-card">
 
-  <select id="state">
-    <option value="">Select State</option>
-  </select>
+    <h1>Complete Your Profile</h1>
 
-  <input type="text" id="zip" placeholder="ZIP Code">
+    <input id="fullName" placeholder="Full Name *" />
+    <input id="company" placeholder="Company / Lab Name" />
+    <input id="phone" placeholder="Phone Number *" />
 
-  <label style="display:block;margin-top:20px;">
-    Do you have a referral code?
-  </label>
-  <input type="text" id="referralInput" placeholder="Enter Referral Code (Optional)">
+    <input id="address1" placeholder="Address Line 1 *" />
+    <input id="address2" placeholder="Address Line 2" />
+    <input id="city" placeholder="City *" />
 
-  <button id="saveProfile" class="btn">Save Profile</button>
+    <select id="state">
+      <option value="">Select State *</option>
+      <option>OK</option>
+      <option>TX</option>
+      <option>CA</option>
+      <option>FL</option>
+      <option>NY</option>
+      <!-- Add full state list later -->
+    </select>
+
+    <input id="zip" placeholder="ZIP Code *" />
+
+    <input id="referralCode" placeholder="Referral Code (Optional)" />
+
+    <button id="saveProfile">Save Profile</button>
+
+  </div>
+
 </main>
 
 <footer class="footer">
@@ -58,5 +69,6 @@
 </footer>
 
 <script type="module" src="js/complete-profile.js"></script>
+
 </body>
 </html>
