@@ -1,5 +1,4 @@
 import { auth, db } from "./firebase-config.js";
-
 import {
   onAuthStateChanged,
   signOut
@@ -14,19 +13,34 @@ import {
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const logoutBtn = document.getElementById("logoutBtn");
-const profileEmail = document.getElementById("profileEmail");
-const profilePhone = document.getElementById("profilePhone");
-const profileAddress = document.getElementById("profileAddress");
-const profileReferral = document.getElementById("profileReferral");
-const ordersContainer = document.getElementById("ordersContainer");
-
 /* =========================
    Logout
 ========================= */
-logoutBtn?.addEventListener("click", async () => {
+document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.href = "index.html";
+});
+
+/* =========================
+   Tab Switching
+========================= */
+const profileTab = document.getElementById("profileTab");
+const ordersTab = document.getElementById("ordersTab");
+const profileSection = document.getElementById("profileSection");
+const ordersSection = document.getElementById("ordersSection");
+
+profileTab.addEventListener("click", () => {
+  profileSection.style.display = "block";
+  ordersSection.style.display = "none";
+  profileTab.classList.add("active");
+  ordersTab.classList.remove("active");
+});
+
+ordersTab.addEventListener("click", () => {
+  profileSection.style.display = "none";
+  ordersSection.style.display = "block";
+  ordersTab.classList.add("active");
+  profileTab.classList.remove("active");
 });
 
 /* =========================
@@ -41,6 +55,7 @@ onAuthStateChanged(auth, async (user) => {
 
   loadProfile(user.uid);
   loadOrders(user.uid);
+
 });
 
 /* =========================
@@ -48,36 +63,37 @@ onAuthStateChanged(auth, async (user) => {
 ========================= */
 async function loadProfile(uid) {
 
-  const userRef = doc(db, "users", uid);
-  const snap = await getDoc(userRef);
+  const profileDiv = document.getElementById("profileInfo");
+  const docSnap = await getDoc(doc(db, "users", uid));
 
-  if (!snap.exists()) return;
+  if (!docSnap.exists()) {
+    profileDiv.innerHTML = "<p>No profile data found.</p>";
+    return;
+  }
 
-  const data = snap.data();
+  const data = docSnap.data();
 
-  profileEmail.textContent = data.email || "-";
-  profilePhone.textContent = data.phone || "-";
-
-  profileAddress.textContent = `
-    ${data.address1 || ""} 
-    ${data.address2 || ""}, 
-    ${data.city || ""}, 
-    ${data.state || ""} 
-    ${data.zip || ""}
+  profileDiv.innerHTML = `
+    <p><strong>Email:</strong> ${data.email || "-"}</p>
+    <p><strong>Phone:</strong> ${data.phone || "-"}</p>
+    <p><strong>Address:</strong><br>
+      ${data.address1 || ""} ${data.address2 || ""}<br>
+      ${data.city || ""}, ${data.state || ""} ${data.zip || ""}
+    </p>
+    <p><strong>Referral Code:</strong> ${data.referralCode || "-"}</p>
   `;
-
-  profileReferral.textContent = data.referralCode || "-";
 }
 
 /* =========================
-   Load Orders (Realtime)
+   Load Orders
 ========================= */
 function loadOrders(uid) {
 
+  const ordersContainer = document.getElementById("ordersContainer");
   const ordersRef = collection(db, "users", uid, "orders");
   const q = query(ordersRef, orderBy("createdAt", "desc"));
 
-  onSnapshot(q, (snapshot) => {
+  onSnapshot(q, snapshot => {
 
     ordersContainer.innerHTML = "";
 
@@ -93,8 +109,11 @@ function loadOrders(uid) {
       const orderDiv = document.createElement("div");
       orderDiv.className = "order-card";
 
-      let itemsHtml = "";
+      const date = order.createdAt?.seconds
+        ? new Date(order.createdAt.seconds * 1000).toLocaleString()
+        : "Pending";
 
+      let itemsHtml = "";
       order.items.forEach(item => {
         itemsHtml += `
           <div class="order-item">
@@ -104,37 +123,16 @@ function loadOrders(uid) {
         `;
       });
 
-      const date = order.createdAt?.seconds
-        ? new Date(order.createdAt.seconds * 1000).toLocaleString()
-        : "Pending";
-
       orderDiv.innerHTML = `
-        <div><strong>Order ID:</strong> ${docSnap.id}</div>
-        <div><strong>Date:</strong> ${date}</div>
-        <div>${itemsHtml}</div>
-        <div><strong>Total:</strong> $${order.total}</div>
+        <p><strong>Order ID:</strong> ${docSnap.id}</p>
+        <p><strong>Date:</strong> ${date}</p>
+        ${itemsHtml}
+        <p><strong>Total:</strong> $${order.total}</p>
       `;
 
       ordersContainer.appendChild(orderDiv);
+
     });
+
   });
 }
-
-/* =========================
-   Sidebar Tab Switching
-========================= */
-const sidebarLinks = document.querySelectorAll(".sidebar-link");
-const tabs = document.querySelectorAll(".account-tab");
-
-sidebarLinks.forEach(link => {
-  link.addEventListener("click", () => {
-
-    sidebarLinks.forEach(l => l.classList.remove("active"));
-    tabs.forEach(t => t.classList.remove("active"));
-
-    link.classList.add("active");
-
-    const tabId = link.getAttribute("data-tab");
-    document.getElementById(tabId).classList.add("active");
-  });
-});
