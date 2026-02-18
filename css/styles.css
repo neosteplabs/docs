@@ -120,3 +120,29 @@ main {
   font-size: 13px;
   color: #64748b;
 }
+
+/* =========================
+   MOBILE FIX
+========================= */
+@media (max-width: 768px) {
+
+  main {
+    margin: 110px auto 80px auto;
+    padding: 16px;
+  }
+
+  .navbar {
+    width: calc(100% - 16px);
+    padding: 14px 18px;
+  }
+
+  .header-logo {
+    height: 40px;
+  }
+
+  .nav-links {
+    gap: 16px;
+    font-size: 14px;
+  }
+
+}
