@@ -22,46 +22,6 @@ main {
 }
 
 /* =========================
-   HEADINGS
-========================= */
-h1, h2, h3 {
-  margin-bottom: 20px;
-}
-
-/* =========================
-   FORM ELEMENTS
-========================= */
-input, textarea, select {
-  width: 100%;
-  padding: 12px;
-  margin: 8px 0 16px 0;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  font-size: 14px;
-  font-family: inherit;
-  background: white;
-}
-
-button {
-  padding: 12px 20px;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: 0.2s ease;
-}
-
-button:hover {
-  background: #1e40af;
-}
-
-.btn {
-  width: 100%;
-}
-
-/* =========================
    NAVBAR
 ========================= */
 .navbar {
@@ -86,23 +46,6 @@ button:hover {
   height: 70px;
 }
 
-.nav-links {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  gap: 25px;
-}
-
-.nav-links a {
-  text-decoration: none;
-  color: #334155;
-  font-weight: 500;
-}
-
-.nav-links a:hover {
-  color: #2563eb;
-}
-
 /* =========================
    PRODUCT GRID
 ========================= */
@@ -114,7 +57,7 @@ button:hover {
 
 .product-card {
   background: white;
-  padding: 30px 25px;
+  padding: 30px;
   border-radius: 18px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
   text-align: center;
@@ -132,17 +75,49 @@ button:hover {
   display: block;
 }
 
-/* Make dropdown same width as image */
 .mgSelect {
   width: 100%;
   max-width: 200px;
   margin: 0 auto 16px auto;
-  display: block;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
 }
 
-.product-card .btn {
+.btn {
+  width: 100%;
   max-width: 200px;
   margin: 0 auto;
+  padding: 12px;
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #1e40af;
+}
+
+/* =========================
+   CART OVERLAY
+========================= */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+  transition: 0.3s ease;
+  z-index: 1500;
+}
+
+.cart-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 /* =========================
@@ -168,6 +143,10 @@ button:hover {
   bottom: 0;
 }
 
+.cart-drawer h2 {
+  margin-bottom: 25px;
+}
+
 /* =========================
    CART ITEMS
 ========================= */
@@ -175,61 +154,75 @@ button:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 0;
+  padding: 18px 0;
   border-bottom: 1px solid #e2e8f0;
 }
 
-.cart-item-info {
+.cart-item-left {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.cart-price {
+.cart-item-name {
+  font-weight: 600;
+}
+
+.cart-item-price {
   font-size: 14px;
   color: #64748b;
 }
 
+/* Quantity controls */
 .cart-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
 }
 
-.cart-btn {
-  background: #e5e7eb;
+.qty-btn {
+  width: 32px;
+  height: 32px;
+  background: #f1f5f9;
   border: none;
-  padding: 6px 12px;
   border-radius: 8px;
+  font-weight: 700;
   cursor: pointer;
-  font-weight: 600;
-  min-width: 35px;
+  transition: 0.2s ease;
 }
 
-.cart-btn:hover {
-  background: #d1d5db;
+.qty-btn:hover {
+  background: #e2e8f0;
+}
+
+.qty-number {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 600;
 }
 
 .remove-btn {
-  background: transparent;
-  border: none;
+  margin-left: 10px;
   color: #ef4444;
-  font-size: 16px;
   cursor: pointer;
+  font-weight: 600;
 }
 
-.remove-btn:hover {
-  opacity: 0.7;
-}
-
+/* =========================
+   TOTAL SECTION
+========================= */
 #cartTotal {
-  margin-top: 20px;
+  margin-top: 25px;
   font-size: 18px;
+  font-weight: 700;
 }
 
 #checkoutBtn {
-  width: 100%;
   margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  font-size: 15px;
+  border-radius: 12px;
 }
 
 /* =========================
@@ -246,24 +239,4 @@ button:hover {
   justify-content: center;
   font-size: 0.85rem;
   color: #64748b;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 768px) {
-
-  main {
-    margin: 140px auto 100px auto;
-  }
-
-  .product-image {
-    max-width: 180px;
-  }
-
-  .mgSelect,
-  .product-card .btn {
-    max-width: 180px;
-  }
-
 }
