@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>NeoStep Secure Portal</title>
-  <link rel="stylesheet" href="css/styles.css?v=6" />
+  <link rel="stylesheet" href="css/styles.css?v=7" />
 </head>
 <body>
 
@@ -17,9 +17,7 @@
 </header>
 
 <main>
-
   <div class="auth-card">
-
     <h2>Secure Laboratory Access</h2>
 
     <input type="email" id="email" placeholder="Email">
@@ -28,34 +26,14 @@
     <button id="loginBtn">Login</button>
     <button id="registerBtn" style="margin-top:10px;">Register</button>
 
+    <p id="auth-message" style="margin-top:10px;color:red;"></p>
   </div>
-
 </main>
-
-<!-- VERIFICATION MODAL -->
-<div id="verificationModal" class="modal-overlay" style="display:none;">
-
-  <div class="modal-card">
-    <h3>Email Verification Required</h3>
-    <p>
-      We sent a verification link to:
-    </p>
-    <p class="modal-email" style="font-weight:600;"></p>
-    <p>
-      Please verify your email to access the portal.
-    </p>
-
-    <button id="resendVerification">Resend Email</button>
-
-  </div>
-
-</div>
 
 <footer class="footer">
   © 2026 NeoStep. Research use only.
 </footer>
 
 <script type="module" src="js/script.js"></script>
-
 </body>
 </html>
