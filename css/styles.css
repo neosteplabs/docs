@@ -1,6 +1,146 @@
 /* =========================
+   GLOBAL
+========================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+main {
+  width: 95%;
+  max-width: 1200px;
+  margin: 130px auto 80px auto;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  background: #ffffff;
+  padding: 18px 0;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  z-index: 2000;
+}
+
+.nav-container {
+  width: 95%;
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-logo {
+  height: 45px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li {
+  list-style: none;
+}
+
+.nav-links a,
+#logoutBtn {
+  text-decoration: none;
+  color: #1e293b;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nav-links a:hover,
+#logoutBtn:hover {
+  color: #2563eb;
+}
+
+/* =========================
+   CART BADGE
+========================= */
+
+#cartBadge {
+  background: #2563eb;
+  color: white;
+  font-size: 12px;
+  padding: 3px 7px;
+  border-radius: 20px;
+  margin-left: 6px;
+}
+
+/* =========================
+   PRODUCT GRID
+========================= */
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.product-image {
+  width: 100%;
+  max-width: 220px;
+  margin-bottom: 20px;
+}
+
+.product-card h2 {
+  margin-bottom: 15px;
+}
+
+select,
+input {
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  margin: 5px 0;
+}
+
+.btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-weight: 600;
+}
+
+.btn:hover {
+  background: #1d4ed8;
+}
+
+/* =========================
    CART DROPDOWN
 ========================= */
+
 .cart-wrapper {
   position: relative;
   cursor: pointer;
@@ -41,24 +181,10 @@
   padding-top: 10px;
 }
 
-.mini-qty {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 5px;
-}
-
-.mini-qty button {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  padding: 0;
-  font-size: 14px;
-}
-
 /* =========================
    MOBILE FLOATING CART
 ========================= */
+
 .mobile-cart-bubble {
   position: fixed;
   bottom: 25px;
@@ -78,4 +204,15 @@
   .mobile-cart-bubble {
     display: block;
   }
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+  text-align: center;
+  padding: 40px 0;
+  color: #64748b;
+  font-size: 14px;
 }
