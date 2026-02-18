@@ -1,74 +1,75 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Complete Profile | NeoStep</title>
-  <link rel="stylesheet" href="css/styles.css?v=6" />
-</head>
-<body>
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<header class="navbar">
-  <div class="nav-container">
+const saveBtn = document.getElementById("saveProfile");
 
-    <a href="catalog.html">
-      <img src="assets/logo/neostep-logo-header.jpg" class="header-logo">
-    </a>
+/* =========================
+   Generate NS Referral Code
+========================= */
+function generateReferralCode() {
+  const random = Math.floor(1000 + Math.random() * 9000);
+  return `NS${random}`;
+}
 
-    <ul class="nav-links">
-      <li><a href="catalog.html">Catalog</a></li>
-      <li><a href="account.html">Account</a></li>
+/* =========================
+   Auth Guard
+========================= */
+onAuthStateChanged(auth, async (user) => {
 
-      <li id="cartIcon">
-        🛒
-        <span id="cartBadge">0</span>
-      </li>
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
 
-      <li id="logoutBtn">Logout</li>
-    </ul>
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
 
-  </div>
-</header>
+  saveBtn?.addEventListener("click", async () => {
 
-<main>
+    const fullName = document.getElementById("fullName").value;
+    const phone = document.getElementById("phone").value;
 
-  <div class="profile-card">
+    const address1 = document.getElementById("address1").value;
+    const address2 = document.getElementById("address2").value;
+    const city = document.getElementById("city").value;
+    const state = document.getElementById("state").value;
+    const zip = document.getElementById("zip").value;
 
-    <h1>Complete Your Profile</h1>
+    const referralInput = document.getElementById("referralCode")?.value || "";
 
-    <input id="fullName" placeholder="Full Name *" />
-    <input id="company" placeholder="Company / Lab Name" />
-    <input id="phone" placeholder="Phone Number *" />
+    if (!fullName || !phone || !address1 || !city || !state || !zip) {
+      alert("Please complete all required fields.");
+      return;
+    }
 
-    <input id="address1" placeholder="Address Line 1 *" />
-    <input id="address2" placeholder="Address Line 2" />
-    <input id="city" placeholder="City *" />
+    let referralCodeToSave;
 
-    <select id="state">
-      <option value="">Select State *</option>
-      <option>OK</option>
-      <option>TX</option>
-      <option>CA</option>
-      <option>FL</option>
-      <option>NY</option>
-      <!-- Add full state list later -->
-    </select>
+    // If user already has a referral code, keep it
+    if (userSnap.exists() && userSnap.data().referralCode) {
+      referralCodeToSave = userSnap.data().referralCode;
+    } else {
+      referralCodeToSave = generateReferralCode();
+    }
 
-    <input id="zip" placeholder="ZIP Code *" />
+    const profileData = {
+      fullName,
+      phone,
+      address1,
+      address2,
+      city,
+      state,
+      zip,
+      referralUsed: referralInput || null,
+      referralCode: referralCodeToSave,
+      profileComplete: true,
+      createdAt: userSnap.exists() ? userSnap.data().createdAt : serverTimestamp()
+    };
 
-    <input id="referralCode" placeholder="Referral Code (Optional)" />
+    await setDoc(userRef, profileData, { merge: true });
 
-    <button id="saveProfile">Save Profile</button>
+    window.location.href = "catalog.html";
 
-  </div>
+  });
 
-</main>
-
-<footer class="footer">
-  © 2026 NeoStep. Research use only.
-</footer>
-
-<script type="module" src="js/complete-profile.js"></script>
-
-</body>
-</html>
+});
