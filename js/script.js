@@ -57,17 +57,15 @@ async function generateReferralCode() {
 ========================= */
 
 registerBtn?.addEventListener("click", async () => {
-
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
 
   if (!email || !password) {
-    if (message) message.textContent = "Please enter email and password.";
+    message.textContent = "Please enter email and password.";
     return;
   }
 
   try {
-
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
@@ -76,8 +74,13 @@ registerBtn?.addEventListener("click", async () => {
 
     const user = userCredential.user;
 
+    // SEND VERIFICATION FIRST
+    await sendEmailVerification(user);
+
+    // Generate referral code
     const referralCode = await generateReferralCode();
 
+    // Then create Firestore user document
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       referralCode,
@@ -85,14 +88,11 @@ registerBtn?.addEventListener("click", async () => {
       createdAt: serverTimestamp()
     });
 
-    await sendEmailVerification(user);
-
-    alert("Verification email sent. Please verify before logging in.");
-
-    await signOut(auth);
+    alert("Verification email sent. Please check your inbox.");
+    await auth.signOut();
 
   } catch (error) {
-    if (message) message.textContent = error.message;
+    message.textContent = error.message;
   }
 });
 
