@@ -1,10 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Catalog | NeoStep</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account | NeoStep</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -14,10 +12,12 @@
     <a href="catalog.html">
       <img src="assets/logo/neostep-logo-header.jpg" class="header-logo">
     </a>
-    <ul class="nav-links">
-      <li><a href="catalog.html" class="active">Catalog</a></li>
-      <li class="dropdown">
-        <a href="#">Account ▾</a>
+
+    <div class="nav-right">
+      <a href="catalog.html" class="nav-link">Catalog</a>
+
+      <div class="dropdown">
+        <button class="dropdown-toggle">Account ▾</button>
         <div class="dropdown-menu">
           <a href="account.html">Profile</a>
           <a href="admin.html" id="adminLink" style="display:none;">
@@ -25,20 +25,49 @@
           </a>
           <a href="#" id="logoutBtn">Logout</a>
         </div>
-      </li>
-    </ul>
+      </div>
+    </div>
   </div>
 </header>
 
 <main>
+
   <h1>My Account</h1>
-  <div id="productContainer" class="product-grid"></div>
+
+  <div class="account-tabs">
+    <button id="profileTabBtn" class="tab-btn active">Profile</button>
+    <button id="ordersTabBtn" class="tab-btn">Orders</button>
+  </div>
+
+  <!-- PROFILE SECTION -->
+  <div id="profileSection">
+
+    <div class="profile-card">
+
+      <p><strong>Email:</strong> <span id="emailDisplay">-</span></p>
+      <p><strong>Phone:</strong> <span id="phoneDisplay">-</span></p>
+      <p><strong>Address:</strong> <span id="addressDisplay">-</span></p>
+      <p><strong>Referral Code:</strong> <span id="referralDisplay">-</span></p>
+
+    </div>
+
+  </div>
+
+  <!-- ORDERS SECTION -->
+  <div id="ordersSection" style="display:none;">
+
+    <div id="ordersContainer"></div>
+
+  </div>
+
 </main>
 
 <footer class="footer">
   © 2026 NeoStep. Research use only.
 </footer>
+
 <script type="module" src="js/account.js"></script>
 <script type="module" src="js/navbar.js"></script>
+
 </body>
 </html>
