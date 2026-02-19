@@ -48,7 +48,7 @@ h1 {
   margin: 0 auto;
   background: #ffffff;
   border-radius: 60px;
-  padding: 0 22px;
+  padding: 10px 22px;
   height: 60px;
   box-shadow: 0 15px 40px rgba(0,0,0,0.08);
 
@@ -58,7 +58,8 @@ h1 {
 }
 
 .header-logo {
-  height: 44px;
+  height: 100%;
+  max-height: 44px;
   width: auto;
   object-fit: contain;
 }
@@ -105,6 +106,7 @@ h1 {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
+
   background: white;
   border-radius: 20px;
   box-shadow: 0 20px 50px rgba(0,0,0,0.15);
@@ -138,87 +140,55 @@ h1 {
   background: #f3f4f6;
 }
 
-/* ADMIN BADGE */
-
 .admin-badge {
   background: #2563eb;
   color: white;
   font-size: 10px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 20px;
   margin-left: 8px;
 }
 
 /* =========================
-   AUTH LAYOUT
+   AUTH PAGE
 ========================= */
 
 .auth-container {
-  min-height: calc(100vh - 140px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
+  max-width: 460px;
+  margin: 120px auto 60px auto;
+  padding: 0 20px;
 }
 
 .auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: #f5f6f7;
-  padding: 40px 30px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-  text-align: center;
+  background: white;
+  padding: 40px 32px;
+  border-radius: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.06);
 }
 
 .auth-card h1 {
   font-size: 26px;
-  margin-bottom: 28px;
+  margin-bottom: 24px;
 }
-
-/* AUTH INPUTS */
 
 .auth-card input {
   width: 100%;
-  padding: 14px 16px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-  border: 1px solid #d9d9d9;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  margin-bottom: 14px;
   font-size: 14px;
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
-.btn {
+.auth-card .btn {
   width: 100%;
-  padding: 14px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
   margin-bottom: 12px;
-  transition: all 0.2s ease;
 }
 
-#loginBtn {
-  background: linear-gradient(90deg, #3c63d2, #2e57c6);
+.secondary-btn {
+  background: #0f172a;
   color: white;
-}
-
-#loginBtn:hover {
-  opacity: 0.9;
-}
-
-#registerBtn {
-  background: #0f1b2d;
-  color: white;
-}
-
-#registerBtn:hover {
-  opacity: 0.9;
 }
 
 /* =========================
@@ -272,6 +242,21 @@ select {
   font-size: 14px;
 }
 
+.btn {
+  background: #2563eb;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
 /* =========================
    CART DROPDOWN
 ========================= */
@@ -311,7 +296,4 @@ select {
     font-size: 28px;
   }
 
-  .auth-card {
-    padding: 30px 22px;
-  }
 }
