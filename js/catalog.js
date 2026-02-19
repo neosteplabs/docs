@@ -2,7 +2,8 @@ import { auth, db } from "./firebase-config.js";
 
 import {
   onAuthStateChanged,
-  signOut
+  signOut,
+  getIdTokenResult
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
@@ -34,6 +35,14 @@ onAuthStateChanged(auth, async (user) => {
 
   currentUser = user;
 
+  // 🔥 Check admin claim and show navbar link
+  const token = await getIdTokenResult(user);
+  const adminLink = document.getElementById("adminLink");
+
+  if (token.claims.admin && adminLink) {
+    adminLink.style.display = "inline-block";
+  }
+
   const userDoc = await getDoc(doc(db, "users", user.uid));
 
   if (!userDoc.exists() || !userDoc.data().profileComplete) {
@@ -57,7 +66,7 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
 
 
 /* =========================
-   PRODUCTS (FROM FIRESTORE)
+   PRODUCTS
 ========================= */
 
 async function renderProducts() {
@@ -68,10 +77,7 @@ async function renderProducts() {
   container.innerHTML = "";
 
   const productsRef = collection(db, "products");
-
-  // ORDER BY displayOrder
   const q = query(productsRef, orderBy("displayOrder", "asc"));
-
   const snapshot = await getDocs(q);
 
   snapshot.forEach(docSnap => {
@@ -194,34 +200,3 @@ function listenToCart(uid) {
     mobileCount.style.display = totalQty > 0 ? "inline-block" : "none";
   });
 }
-
-
-/* =========================
-   CART DROPDOWN
-========================= */
-
-const mobileBubble = document.getElementById("mobileCartBubble");
-const cartDropdown = document.getElementById("cartDropdown");
-
-mobileBubble?.addEventListener("click", (e) => {
-  e.stopPropagation();
-  cartDropdown?.classList.toggle("open");
-});
-
-document.addEventListener("click", (e) => {
-  if (!cartDropdown) return;
-
-  if (!cartDropdown.contains(e.target) &&
-      !mobileBubble?.contains(e.target)) {
-    cartDropdown.classList.remove("open");
-  }
-});
-
-
-/* =========================
-   CHECKOUT
-========================= */
-
-document.getElementById("goCheckout")?.addEventListener("click", () => {
-  window.location.href = "checkout.html";
-});
