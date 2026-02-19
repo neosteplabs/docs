@@ -74,13 +74,8 @@ registerBtn?.addEventListener("click", async () => {
 
     const user = userCredential.user;
 
-    // SEND VERIFICATION FIRST
-    await sendEmailVerification(user);
-
-    // Generate referral code
     const referralCode = await generateReferralCode();
 
-    // Then create Firestore user document
     await setDoc(doc(db, "users", user.uid), {
       email: user.email,
       referralCode,
@@ -88,11 +83,14 @@ registerBtn?.addEventListener("click", async () => {
       createdAt: serverTimestamp()
     });
 
-    alert("Verification email sent. Please check your inbox.");
-    await auth.signOut();
+    window.location.href = "complete-profile.html";
 
   } catch (error) {
-    message.textContent = error.message;
+    if (error.code === "auth/email-already-in-use") {
+      message.textContent = "That email is already registered. Please login.";
+    } else {
+      message.textContent = error.message;
+    }
   }
 });
 
