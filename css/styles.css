@@ -335,3 +335,79 @@ input[type="password"] {
   }
 
 }
+/* =========================
+   COMPLETE PROFILE PAGE
+========================= */
+
+.profile-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.profile-card {
+  background: white;
+  padding: 40px;
+  border-radius: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.06);
+}
+
+.profile-card h1 {
+  margin-bottom: 30px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.profile-grid input {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  font-size: 14px;
+  background: #f8f9fb;
+}
+
+.profile-grid input:focus {
+  outline: none;
+  border-color: #2563eb;
+  background: white;
+}
+
+.profile-actions {
+  margin-top: 25px;
+  text-align: right;
+}
+
+.profile-actions button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.profile-actions button:hover {
+  opacity: 0.9;
+}
+
+/* Mobile Fix */
+@media (max-width: 768px) {
+
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-actions {
+    text-align: center;
+  }
+
+  .profile-actions button {
+    width: 100%;
+  }
+
+}
