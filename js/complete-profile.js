@@ -6,27 +6,15 @@ import {
 
 import {
   doc,
-  setDoc,
-  updateDoc,
   getDoc,
+  updateDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-/* =========================
-   Elements
-========================= */
-
-const address1 = document.getElementById("address1");
-const address2 = document.getElementById("address2");
-const city = document.getElementById("city");
-const state = document.getElementById("state");
-const zip = document.getElementById("zip");
-const phone = document.getElementById("phone");
-const referralInput = document.getElementById("referralInput");
 const saveBtn = document.getElementById("saveProfileBtn");
 
 /* =========================
-   Auth Guard + Auto Redirect
+   AUTH CHECK + PROFILE CHECK
 ========================= */
 
 onAuthStateChanged(auth, async (user) => {
@@ -36,95 +24,71 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  try {
+  const snap = await getDoc(doc(db, "users", user.uid));
 
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+  if (!snap.exists()) return;
 
-    // If user doc DOES NOT exist (edge case)
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        email: user.email,
-        profileComplete: false,
-        createdAt: serverTimestamp()
-      });
-      return;
-    }
+  const data = snap.data();
 
-    const userData = userSnap.data();
-
-    // If profile already complete → go to catalog
-    if (userData.profileComplete === true) {
-      window.location.replace("catalog.html");
-    }
-
-  } catch (error) {
-    console.error("Auth guard error:", error);
+  // If already completed → skip page
+  if (data.profileComplete) {
+    window.location.replace("catalog.html");
+    return;
   }
+
+  // Auto-fill if partially completed
+  if (data.address1) document.getElementById("address1").value = data.address1;
+  if (data.address2) document.getElementById("address2").value = data.address2;
+  if (data.city) document.getElementById("city").value = data.city;
+  if (data.state) document.getElementById("state").value = data.state;
+  if (data.zip) document.getElementById("zip").value = data.zip;
+  if (data.phone) document.getElementById("phone").value = data.phone;
 
 });
 
 /* =========================
-   Save Profile
+   SAVE PROFILE
 ========================= */
 
-saveBtn.addEventListener("click", async () => {
+saveBtn?.addEventListener("click", async () => {
 
   const user = auth.currentUser;
-  if (!user) return;
 
-  if (!address1.value || !city.value || !state.value || !zip.value || !phone.value) {
+  if (!user) {
+    alert("Not authenticated.");
+    return;
+  }
+
+  const address1 = document.getElementById("address1").value.trim();
+  const address2 = document.getElementById("address2").value.trim();
+  const city = document.getElementById("city").value.trim();
+  const state = document.getElementById("state").value.trim();
+  const zip = document.getElementById("zip").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!address1 || !city || !state || !zip || !phone) {
     alert("Please complete all required fields.");
     return;
   }
 
   try {
 
-    const userRef = doc(db, "users", user.uid);
-    const userSnap = await getDoc(userRef);
+    await updateDoc(doc(db, "users", user.uid), {
+      address1,
+      address2,
+      city,
+      state,
+      zip,
+      phone,
+      profileComplete: true,
+      profileCompletedAt: serverTimestamp()
+    });
 
-    // If document doesn't exist → create it
-    if (!userSnap.exists()) {
-
-      await setDoc(userRef, {
-        email: user.email,
-        address1: address1.value.trim(),
-        address2: address2.value.trim(),
-        city: city.value.trim(),
-        state: state.value.trim(),
-        zip: zip.value.trim(),
-        phone: phone.value.trim(),
-        referralUsed: referralInput.value.trim() || null,
-        profileComplete: true,
-        createdAt: serverTimestamp()
-      });
-
-    } else {
-
-      await updateDoc(userRef, {
-        address1: address1.value.trim(),
-        address2: address2.value.trim(),
-        city: city.value.trim(),
-        state: state.value.trim(),
-        zip: zip.value.trim(),
-        phone: phone.value.trim(),
-        referralUsed: referralInput.value.trim() || null,
-        profileComplete: true
-      });
-
-    }
-
-    // Double check save succeeded
-    const verifySnap = await getDoc(userRef);
-    if (verifySnap.exists() && verifySnap.data().profileComplete === true) {
-      window.location.replace("catalog.html");
-    } else {
-      alert("Profile saved but verification failed. Refresh and try again.");
-    }
+    window.location.replace("catalog.html");
 
   } catch (error) {
-    console.error("Save error:", error);
-    alert("Error saving profile: " + error.message);
+    console.error(error);
+    alert("Error saving profile.");
   }
 
 });
