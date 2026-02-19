@@ -1,22 +1,56 @@
-
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Admin Dashboard</title>
+  <title>NeoStep Admin Dashboard</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
+<!-- =========================
+     NAVBAR
+========================= -->
+<header class="navbar">
+  <div class="nav-container">
+    <a href="catalog.html">
+      <img src="assets/logo/neostep-logo-header.png" class="header-logo">
+    </a>
 
+    <div class="nav-right">
+      <a href="catalog.html" class="nav-link">Catalog</a>
 
+      <div class="dropdown">
+        <button class="dropdown-toggle">Account ▾</button>
+        <div class="dropdown-menu">
+          <a href="account.html">Profile</a>
+          <a href="admin.html" id="adminLink">
+            Dashboard <span class="admin-badge">ADMIN</span>
+          </a>
+          <a href="#" id="logoutBtn">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- =========================
+     MAIN CONTENT
+========================= -->
 <main>
   <h1>Admin Dashboard</h1>
-  <div id="productsContainer"></div>
+  <p>Manage products, visibility, pricing and display order.</p>
+
+  <div id="adminProductsContainer"></div>
 </main>
 
-<footer class="footer">© 2026 NeoStep. Research use only.</footer>
+<footer class="footer">
+  © 2026 NeoStep. Research use only.
+</footer>
 
+<!-- IMPORTANT: Firebase must load before navbar -->
+<script type="module" src="js/firebase-config.js"></script>
+<script type="module" src="js/navbar.js"></script>
 <script type="module" src="js/admin.js"></script>
+
 </body>
 </html>
