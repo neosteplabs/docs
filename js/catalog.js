@@ -16,6 +16,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 let currentUser = null;
+let unsubscribeCart = null;
 
 /* =========================
    AUTH GUARD
@@ -41,6 +42,7 @@ onAuthStateChanged(auth, async (user) => {
   listenToCart(user.uid);
 });
 
+
 /* =========================
    LOGOUT
 ========================= */
@@ -49,6 +51,7 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
   await signOut(auth);
   window.location.replace("index.html");
 });
+
 
 /* =========================
    PRODUCTS
@@ -68,7 +71,10 @@ const products = [
 ];
 
 function renderProducts() {
+
   const container = document.getElementById("productContainer");
+  if (!container) return;
+
   container.innerHTML = "";
 
   products.forEach(product => {
@@ -97,40 +103,63 @@ function renderProducts() {
     const qtyInput = card.querySelector(".qtyInput");
 
     addBtn.addEventListener("click", async () => {
+
       const mg = mgSelect.value;
-      const qty = parseInt(qtyInput.value);
+      const qty = parseInt(qtyInput.value) || 1;
       const price = product.prices[mg];
       const itemId = `${product.compound}-${mg}`;
 
-      await setDoc(
-        doc(db, "users", currentUser.uid, "cart", itemId),
-        { compound: product.compound, mg, quantity: qty, price }
-      );
+      const itemRef = doc(db, "users", currentUser.uid, "cart", itemId);
+      const existing = await getDoc(itemRef);
+
+      if (existing.exists()) {
+        await updateDoc(itemRef, {
+          quantity: existing.data().quantity + qty
+        });
+      } else {
+        await setDoc(itemRef, {
+          compound: product.compound,
+          mg,
+          quantity: qty,
+          price
+        });
+      }
+
+      qtyInput.value = 1;
     });
 
     container.appendChild(card);
   });
 }
 
+
 /* =========================
-   CART
+   CART LISTENER
 ========================= */
 
 function listenToCart(uid) {
 
   const cartRef = collection(db, "users", uid, "cart");
 
-  onSnapshot(cartRef, snapshot => {
+  if (unsubscribeCart) unsubscribeCart();
+
+  unsubscribeCart = onSnapshot(cartRef, snapshot => {
+
+    const cartItemsDiv = document.getElementById("cartItems");
+    const cartTotalEl = document.getElementById("cartTotal");
+    const mobileCount = document.getElementById("mobileCartCount");
+
+    if (!cartItemsDiv || !cartTotalEl || !mobileCount) return;
+
+    cartItemsDiv.innerHTML = "";
 
     let totalQty = 0;
     let totalPrice = 0;
 
-    const cartItemsDiv = document.getElementById("cartItems");
-    cartItemsDiv.innerHTML = "";
-
     snapshot.forEach(docSnap => {
 
       const item = docSnap.data();
+
       totalQty += item.quantity;
       totalPrice += item.quantity * item.price;
 
@@ -168,12 +197,14 @@ function listenToCart(uid) {
       cartItemsDiv.appendChild(row);
     });
 
-    document.getElementById("cartTotal").textContent =
-      `Total: $${totalPrice}`;
+    cartTotalEl.textContent = `Total: $${totalPrice}`;
+    mobileCount.textContent = totalQty;
 
-    document.getElementById("mobileCartCount").textContent = totalQty;
+    // Hide badge if empty
+    mobileCount.style.display = totalQty > 0 ? "inline-block" : "none";
   });
 }
+
 
 /* =========================
    CART DROPDOWN
@@ -184,14 +215,18 @@ const cartDropdown = document.getElementById("cartDropdown");
 
 mobileBubble?.addEventListener("click", (e) => {
   e.stopPropagation();
-  cartDropdown.classList.toggle("open");
+  cartDropdown?.classList.toggle("open");
 });
 
 document.addEventListener("click", (e) => {
-  if (!cartDropdown.contains(e.target)) {
+  if (!cartDropdown) return;
+
+  if (!cartDropdown.contains(e.target) &&
+      !mobileBubble?.contains(e.target)) {
     cartDropdown.classList.remove("open");
   }
 });
+
 
 /* =========================
    CHECKOUT
