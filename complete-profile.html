@@ -2,48 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Complete Profile | NeoStep</title>
-  <link rel="stylesheet" href="css/styles.css?v=8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complete Profile - NeoStep</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
 
-<header class="navbar">
-  <div class="nav-container">
-    <a href="catalog.html">
-      <img src="assets/logo/neostep-logo-header.jpg" class="header-logo">
-    </a>
-  </div>
-</header>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="nav-container">
+      <img src="assets/neostep-logo.png" class="header-logo" alt="NeoStep Logo">
+    </div>
+  </header>
 
-<main>
-
-<div class="profile-container">
-  <div class="profile-card">
+  <main>
     <h1>Complete Your Profile</h1>
 
-    <div class="profile-grid">
-      <input type="text" id="address1" placeholder="Address Line 1">
-      <input type="text" id="address2" placeholder="Address Line 2">
-      <input type="text" id="city" placeholder="City">
-      <input type="text" id="state" placeholder="State">
-      <input type="text" id="zip" placeholder="ZIP Code">
-      <input type="text" id="phone" placeholder="Phone">
-      <input type="text" id="referral" placeholder="Referral Code (Optional)">
-    </div>
+    <div class="profile-card">
+      <div class="profile-form">
 
-    <div class="profile-actions">
-      <button id="saveProfileBtn">Save Profile</button>
+        <input type="text" id="address1" placeholder="Address Line 1">
+        <input type="text" id="address2" placeholder="Address Line 2">
+
+        <input type="text" id="city" placeholder="City">
+        <input type="text" id="state" placeholder="State">
+
+        <input type="text" id="zip" placeholder="ZIP Code">
+        <input type="text" id="phone" placeholder="Phone">
+
+        <input type="text" id="referralInput" class="full-width" placeholder="Referral Code (Optional)">
+
+        <button id="saveProfileBtn" class="btn save-btn">
+          Save Profile
+        </button>
+
+      </div>
     </div>
+  </main>
+
+  <div class="footer">
+    © 2026 NeoStep. Research use only.
   </div>
-</div>
 
-</main>
-
-<footer class="footer">
-  © 2026 NeoStep. Research use only.
-</footer>
-
-<script type="module" src="js/complete-profile.js"></script>
+  <script type="module" src="complete-profile.js"></script>
 </body>
 </html>
