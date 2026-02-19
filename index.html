@@ -2,9 +2,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>NeoStep Login</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
@@ -12,21 +12,23 @@
 <header class="navbar">
   <div class="nav-container">
     <a href="catalog.html">
-      <img src="assets/logo.png" class="header-logo" />
+      <img src="assets/logo.png" class="header-logo">
     </a>
 
-    <nav class="nav-right">
+    <div class="nav-right">
       <a href="catalog.html" class="nav-link">Catalog</a>
 
       <div class="dropdown">
         <button class="dropdown-toggle">Account ▾</button>
         <div class="dropdown-menu">
           <a href="account.html">Profile</a>
-          <a href="admin.html">Dashboard <span class="admin-badge">ADMIN</span></a>
+          <a href="admin.html" id="adminLink" style="display:none;">
+            Dashboard <span class="admin-badge">ADMIN</span>
+          </a>
           <a href="#" id="logoutBtn">Logout</a>
         </div>
       </div>
-    </nav>
+    </div>
   </div>
 </header>
 
@@ -34,13 +36,14 @@
 <main class="auth-container">
   <div class="auth-card">
     <h1>Secure Laboratory Access</h1>
-    <input type="email" placeholder="Email" />
-    <input type="password" placeholder="Password" />
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
     <button class="btn">Login</button>
-    <button class="btn secondary">Register</button>
   </div>
 </main>
 
 <footer class="footer">© 2026 NeoStep. Research use only.</footer>
+
+<script type="module" src="js/navbar.js"></script>
 </body>
 </html>

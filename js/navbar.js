@@ -1,12 +1,12 @@
 
 import { auth } from "./firebase-config.js";
-import { onAuthStateChanged, signOut } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAuthStateChanged, signOut } from 
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const dropdown = document.querySelector(".dropdown");
-const dropdownBtn = document.querySelector(".dropdown > a");
+const toggle = document.querySelector(".dropdown-toggle");
 
-dropdownBtn?.addEventListener("click", (e) => {
+toggle?.addEventListener("click", (e) => {
   e.preventDefault();
   dropdown.classList.toggle("open");
 });
@@ -20,7 +20,7 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) return;
   const token = await user.getIdTokenResult();
   if (token.claims.admin) {
-    const admin = document.getElementById("adminLink");
-    if (admin) admin.style.display = "inline-block";
+    const adminLink = document.getElementById("adminLink");
+    if (adminLink) adminLink.style.display = "block";
   }
 });
