@@ -1,16 +1,15 @@
-
-import { getAuth, onAuthStateChanged, signOut } from 
+import { auth } from "./firebase-config.js";
+import { onAuthStateChanged, signOut } from 
 "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-const auth = getAuth();
-
-onAuthStateChanged(auth, user => {
-  if (!user) return;
+onAuthStateChanged(auth, (user) => {
 
   const adminLink = document.getElementById("adminLink");
-  if (user.email === "lurrtopia1@gmail.com" && adminLink) {
-    adminLink.style.display = "block";
+
+  if (user && user.email === "lurrtopia1@gmail.com") {
+    if (adminLink) adminLink.style.display = "block";
   }
+
 });
 
 document.getElementById("logoutBtn")?.addEventListener("click", async () => {
