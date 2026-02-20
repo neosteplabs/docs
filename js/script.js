@@ -116,3 +116,55 @@ onAuthStateChanged(auth, async (user) => {
   }
 
 });
+/* ============================
+   NeoStep Site-Wide Research Gate
+   ============================ */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Skip if already verified
+  if (localStorage.getItem("neostep_verified") === "true") {
+    return;
+  }
+
+  // Create modal container
+  const gate = document.createElement("div");
+  gate.className = "research-gate";
+
+  gate.innerHTML = `
+    <div class="gate-card">
+      <h2>Secure Research Access</h2>
+
+      <p class="gate-description">
+        NeoStep products are intended strictly for laboratory and analytical research use.
+      </p>
+
+      <ul class="gate-list">
+        <li>You are 21 years of age or older</li>
+        <li>Products are not for human or veterinary use</li>
+        <li>Purchases are for research purposes only</li>
+        <li>You agree to our Terms and Research Policy</li>
+      </ul>
+
+      <button id="accept-gate" class="primary-btn">
+        Accept & Continue
+      </button>
+
+      <button id="exit-gate" class="secondary-btn">
+        Exit Site
+      </button>
+    </div>
+  `;
+
+  document.body.appendChild(gate);
+
+  document.getElementById("accept-gate").addEventListener("click", function () {
+    localStorage.setItem("neostep_verified", "true");
+    gate.remove();
+  });
+
+  document.getElementById("exit-gate").addEventListener("click", function () {
+    window.location.href = "https://google.com";
+  });
+
+});
