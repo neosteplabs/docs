@@ -73,7 +73,7 @@ document.getElementById("runMigration")?.addEventListener("click", async () => {
     }
 
     const vipPrice = Math.max(publicPrice - 20, 0);
-    const familyPrice = Math.max(publicPrice - 40, 0);
+    const familyPrice = Math.max(publicPrice - 30, 0);
 
     await updateDoc(doc(db, "products", docSnap.id), {
       prices: {
