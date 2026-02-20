@@ -59,9 +59,11 @@ onAuthStateChanged(auth, async (user) => {
 
   currentUser = user;
 
-  const token = await getIdTokenResult(user);
-  const adminLink = document.getElementById("adminLink");
+  // 🔥 FORCE TOKEN REFRESH TO GET UPDATED CUSTOM CLAIMS
+  const token = await getIdTokenResult(user, true);
+  const userTier = token.claims.tier || "public";
 
+  const adminLink = document.getElementById("adminLink");
   if (token.claims.admin && adminLink) {
     adminLink.style.display = "inline-block";
   }
@@ -73,7 +75,7 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  await renderProducts();
+  await renderProducts(userTier);
   listenToCart(user.uid);
 });
 
@@ -90,7 +92,7 @@ document.getElementById("logoutBtn")?.addEventListener("click", async () => {
    PRODUCTS
 ========================= */
 
-async function renderProducts() {
+async function renderProducts(userTier) {
 
   const container = document.getElementById("productContainer");
   if (!container) return;
@@ -111,6 +113,13 @@ async function renderProducts() {
 
     if (!product.visible) return;
 
+    // 🔥 Tier-based pricing
+    const displayPrice =
+      product.prices?.[userTier] ??
+      product.prices?.public ??
+      product.price ??
+      0;
+
     const card = document.createElement("div");
     card.className = "product-card";
 
@@ -118,7 +127,7 @@ async function renderProducts() {
       <img src="${product.image}" class="product-image">
       <h2>${product.code}</h2>
       <p>${product.description}</p>
-      <p><strong>$${product.price}</strong></p>
+      <p><strong>$${displayPrice}</strong></p>
       <input type="number" class="qtyInput" value="1" min="1">
       <button class="btn addToCart">Add to Cart</button>
     `;
@@ -142,7 +151,7 @@ async function renderProducts() {
           productId,
           code: product.code,
           quantity: qty,
-          price: product.price
+          price: displayPrice // 🔥 store tier price
         });
       }
 
