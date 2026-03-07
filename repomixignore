@@ -1,0 +1,55 @@
+# =========================
+# Dependencies
+# =========================
+node_modules
+
+# =========================
+# Next.js Build Artifacts
+# =========================
+.next
+out
+build
+
+# =========================
+# Snapshot Outputs
+# Prevent recursive inclusion
+# =========================
+snapshots
+
+# =========================
+# Git Metadata
+# =========================
+.git
+
+# =========================
+# Logs
+# =========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# =========================
+# Environment Files
+# =========================
+.env
+.env.local
+.env.development
+.env.production
+
+# =========================
+# Vercel Deployment Files
+# =========================
+.vercel
+
+# =========================
+# Optional Local Scripts
+# Not needed for AI analysis
+# =========================
+generate-llms.bat
+merge-repo.js
+
+# =========================
+# Legacy / Unused Folder
+# =========================
+src
