@@ -10,25 +10,36 @@ export async function GET(req: Request) {
     }
 
     const idToken = authHeader.split("Bearer ")[1];
+
     const decoded = await adminAuth.verifyIdToken(idToken);
 
-    const adminSnap = await adminDb
+    const adminDoc = await adminDb
       .collection("users")
       .doc(decoded.uid)
       .get();
 
-    if (!adminSnap.exists || !adminSnap.data()?.isAdmin) {
+    const adminData = adminDoc.data();
+
+    if (!adminDoc.exists || !adminData?.isAdmin) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const snapshot = await adminDb.collection("users").get();
+    // Limit users returned to avoid very large responses
+    const snapshot = await adminDb
+      .collection("users")
+      .limit(500)
+      .get();
 
-    const users = snapshot.docs.map(doc => ({
-      id: doc.id,
-      email: doc.data().email || "",
-      tier: doc.data().tier || "public",
-      isAdmin: !!doc.data().isAdmin,
-    }));
+    const users = snapshot.docs.map((doc) => {
+      const data = doc.data();
+
+      return {
+        id: doc.id,
+        email: data.email ?? "",
+        tier: data.tier ?? "public",
+        isAdmin: !!data.isAdmin,
+      };
+    });
 
     return NextResponse.json({ users });
 

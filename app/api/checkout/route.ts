@@ -73,19 +73,41 @@ export async function POST(req: Request) {
     }
 
     let subtotal = 0;
-    const items: any[] = [];
+    const items: {
+  productId: string;
+  name: string;
+  sku: string;
+  quantity: number;
+  publicPrice: number;
+  price: number;
+  total: number;
+}[] = [];
 
     for (const cartDoc of cartSnapshot.docs) {
       const cartData = cartDoc.data();
 
       const { productId, sku, quantity } = cartData;
 
-      if (!productId || !sku || !quantity) {
-        return NextResponse.json(
-          { error: "Invalid cart item." },
-          { status: 400 }
-        );
-      }
+if (!productId || !sku || typeof quantity !== "number" || quantity <= 0) {
+  return NextResponse.json(
+    { error: "Invalid cart item." },
+    { status: 400 }
+  );
+}
+
+const existingOrder = await adminDb
+  .collection("orders")
+  .where("uid", "==", uid)
+  .where("status", "==", "pending")
+  .limit(1)
+  .get();
+
+if (!existingOrder.empty) {
+  return NextResponse.json(
+    { error: "Pending order already exists." },
+    { status: 400 }
+  );
+}
 
       // 🔐 Fetch authoritative product
       const productSnap = await adminDb
@@ -126,7 +148,7 @@ export async function POST(req: Request) {
         );
       }
 
-      if (quantity > stock) {
+      if (quantity > stock < 0) {
         return NextResponse.json(
           { error: `Insufficient stock for ${product.name} (${sku}).` },
           { status: 400 }

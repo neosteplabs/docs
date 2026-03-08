@@ -27,8 +27,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // ✅ Type-safe after exists check
     const order = orderSnap.data() as any;
+
+    // ✅ Validate order items
+    if (!Array.isArray(order.items)) {
+      return NextResponse.json(
+        { error: "Invalid order items." },
+        { status: 400 }
+      );
+    }
 
     // 🛑 Prevent unnecessary re-processing
     if (order.status === status) {
@@ -40,11 +47,19 @@ export async function POST(req: NextRequest) {
     /**
      * INVENTORY ADJUSTMENT
      */
-    if (
-      status === "completed" &&
-      order.inventoryAdjusted !== true
-    ) {
+    if (status === "completed" && order.inventoryAdjusted !== true) {
+
       for (const item of order.items) {
+
+        if (
+          !item.productId ||
+          !item.sku ||
+          typeof item.quantity !== "number" ||
+          item.quantity <= 0
+        ) {
+          throw new Error("Invalid order item data.");
+        }
+
         const productRef = adminDb
           .collection("products")
           .doc(item.productId);
@@ -60,30 +75,34 @@ export async function POST(req: NextRequest) {
 
         const product = productSnap.data() as any;
 
-        const concentrations = product.concentrations.map(
-          (c: any) => {
-            if (c.sku === item.sku) {
-              const newStock = c.stock - item.quantity;
+        // 🔒 Extra safety check
+        if (!Array.isArray(product.concentrations)) {
+          throw new Error("Invalid product concentration data.");
+        }
 
-              if (newStock < 0) {
-                throw new Error(
-                  `Insufficient stock for ${item.sku}`
-                );
-              }
+        const concentrations = product.concentrations.map((c: any) => {
 
-              return {
-                ...c,
-                stock: newStock,
-              };
+          if (c.sku === item.sku) {
+
+            const newStock = c.stock - item.quantity;
+
+            if (newStock < 0) {
+              throw new Error(
+                `Insufficient stock for ${item.sku}`
+              );
             }
 
-            return c;
+            return {
+              ...c,
+              stock: newStock,
+            };
           }
-        );
 
-        batch.update(productRef, {
-          concentrations,
+          return c;
         });
+
+        batch.update(productRef, { concentrations });
+
       }
 
       batch.update(orderRef, {
