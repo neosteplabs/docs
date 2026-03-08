@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import { calculateTierPrice } from "@/lib/pricing";
+import { Product, Concentration } from "@/types/product";
 
 type Props = {
   product: any;
@@ -89,7 +90,7 @@ animate-[modalIn_.22s_cubic-bezier(.16,1,.3,1)_forwards]
   </div>
 
   <div className="space-y-0.5 text-sm">
-    {product.concentrations.map((c, i) => {
+    {product.concentrations.map((c: Concentration, i: number) => {
 
       const price = calculateTierPrice(
         c.prices.public,
