@@ -140,7 +140,7 @@ animate-[modalIn_.22s_cubic-bezier(.16,1,.3,1)_forwards]
             }}
             className="w-full mb-3 border border-slate-300 rounded-md px-3 py-2"
           >
-            {product.concentrations.map((c, i) => {
+            {product.concentrations.map((c: Concentration, i: number) => {
               const price = calculateTierPrice(
                 c.prices.public,
                 "public"
