@@ -3,8 +3,6 @@
 import { useState } from "react";
 import Image from "next/image";
 import ProductModal from "./ProductModal";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 
 type Props = {
   product: any;
@@ -48,19 +46,6 @@ if (totalStock === 0) {
 } else if (totalStock <= 5) {
   stockBorder = "border-amber-400";
 }
-
-const adjustStock = async (change: number) => {
-  if (!product.concentrations?.length) return;
-
-  const updated = [...product.concentrations];
-
-  updated[0].stock = Math.max(0, (updated[0].stock || 0) + change);
-
-  await updateDoc(doc(db, "products", product.id), {
-    concentrations: updated,
-  });
-};
-
   return (
     <>
       <div
@@ -139,59 +124,23 @@ const adjustStock = async (change: number) => {
           {min !== max && ` – $${max}`}
         </div>
 
-        {(() => {
-  
-  if (totalStock === 0) {
-    return (
-      <div className="text-xs text-red-600 mt-1 font-medium">
-        Out of Stock
-      </div>
-    );
-  }
+        <div className="mt-2 text-xs text-slate-500">
 
-if (reorderNeeded) {
-  return (
-    <div className="text-xs text-orange-600 mt-1 font-semibold">
-      ⚠ Reorder Recommended ({totalStock})
+  <div>Stock: {totalStock}</div>
+
+  {totalStock === 0 && (
+    <div className="text-red-600 font-medium">
+      Out of Stock
     </div>
-  );
-}
+  )}
 
-  if (totalStock <= 5) {
-    return (
-      <div className="text-xs text-amber-600 mt-1 font-medium">
-        Low Stock ({totalStock})
-      </div>
-    );
-  }
-
-  return (
-    <div className="text-xs text-slate-500 mt-1">
-      Stock: {totalStock}
+  {reorderNeeded && (
+    <div className="text-orange-600 font-semibold">
+      ⚠ Reorder Recommended
     </div>
-    
-  );
-})()}
-{!isTrash && (
-  <div
-    className="flex justify-center gap-2 mt-2"
-    onClick={(e) => e.stopPropagation()}
-  >
-    <button
-      onClick={() => adjustStock(-1)}
-      className="px-2 py-0.5 text-xs bg-slate-200 rounded hover:bg-slate-300"
-    >
-      −1
-    </button>
+  )}
 
-    <button
-      onClick={() => adjustStock(1)}
-      className="px-2 py-0.5 text-xs bg-slate-200 rounded hover:bg-slate-300"
-    >
-      +1
-    </button>
-  </div>
-)}
+</div>
 
         {/* Plain Visible Checkbox (Bottom Left) */}
         {!isTrash && (
