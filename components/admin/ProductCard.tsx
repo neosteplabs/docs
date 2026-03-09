@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Image from "next/image";
 import ProductModal from "./ProductModal";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 type Props = {
   product: any;
@@ -46,6 +48,18 @@ if (totalStock === 0) {
 } else if (totalStock <= 5) {
   stockBorder = "border-amber-400";
 }
+
+const adjustStock = async (change: number) => {
+  if (!product.concentrations?.length) return;
+
+  const updated = [...product.concentrations];
+
+  updated[0].stock = Math.max(0, (updated[0].stock || 0) + change);
+
+  await updateDoc(doc(db, "products", product.id), {
+    concentrations: updated,
+  });
+};
 
   return (
     <>
@@ -155,8 +169,29 @@ if (reorderNeeded) {
     <div className="text-xs text-slate-500 mt-1">
       Stock: {totalStock}
     </div>
+    
   );
 })()}
+{!isTrash && (
+  <div
+    className="flex justify-center gap-2 mt-2"
+    onClick={(e) => e.stopPropagation()}
+  >
+    <button
+      onClick={() => adjustStock(-1)}
+      className="px-2 py-0.5 text-xs bg-slate-200 rounded hover:bg-slate-300"
+    >
+      −1
+    </button>
+
+    <button
+      onClick={() => adjustStock(1)}
+      className="px-2 py-0.5 text-xs bg-slate-200 rounded hover:bg-slate-300"
+    >
+      +1
+    </button>
+  </div>
+)}
 
         {/* Plain Visible Checkbox (Bottom Left) */}
         {!isTrash && (
