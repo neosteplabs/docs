@@ -6,6 +6,11 @@ const projectId = process.env.FIREBASE_PROJECT_ID;
 const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
 const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
+console.log("Firebase Admin ENV CHECK:");
+console.log("projectId:", projectId);
+console.log("clientEmail exists:", !!clientEmail);
+console.log("privateKey exists:", !!privateKey);
+
 let app;
 
 if (getApps().length > 0) {
